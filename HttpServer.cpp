@@ -124,7 +124,7 @@ static const char* HTML_WIFI_B = \
    						"<h3>Please refresh browser to re-scan SSID if your SSID is not in the list above</h3>" \
 						"</div>" \
 						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
-							"<label for=\"WiFiPassword\">Wi-Fi Passphase : Specify passphrase for SSID</label>" \
+							"<label for=\"WiFiPassword\">Wi-Fi Passphrase : Specify passphrase for SSID</label>" \
 							"<input name=\"WiFiPassword\" id=\"WiFiPassword\" value=\"\" type=\"password\" style=\"width:100%%;\"> " \
 						"</div>" \
 						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
