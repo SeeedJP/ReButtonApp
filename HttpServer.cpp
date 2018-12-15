@@ -95,6 +95,7 @@ static const char* HTML_INDEX = \
 						"<p><a href=\"/wifi\" target=\"_self\">Wi-Fi</a></p>" \
 						"<p><a href=\"/iotcentral\" target=\"_self\">Azure IoT Central</a></p>" \
 						"<p><a href=\"/iothub\" target=\"_self\">Azure IoT Hub</a></p>" \
+						"<p><a href=\"/mqtt\" target=\"_self\">MQTT Server</a></p>" \
 						"<p><a href=\"/message\" target=\"_self\">Device to Cloud (D2C) Message</a></p>" \
 						"<p><a href=\"/firmware\" target=\"_self\">Firmware Update</a></p>" \
 					"</div>" \
@@ -252,6 +253,73 @@ static const char* HTML_IOTHUB2_SUCCESS = \
 				"<div id=\"content\" class=\"row\"> " \
 					"<div class=\"col-sm-10 col-sm-offset-1\" style=\"text-align:center;\"> " \
 						"<h2 style=\"color:#2e7d32;\">Azure IoT Hub saved.</h2> " \
+					"</div>" \
+					"<div class=\"col-sm-10 col-sm-offset-1\" style=\"text-align:center;\"> " \
+						"<button type=\"button\" class=\"primary\" onclick=\"location.href='/'\">Home</button>" \
+						"<button type=\"button\" class=\"primary\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
+					"</div>" \
+				"</div>" \
+			"</section>" \
+		"</body>" \
+	"</html>";
+
+static const char* HTML_MQTT = \
+		"%s<body> " \
+			"<header> " \
+				"<h1 class=\"logo\">ReButton - MQTT Server</h1> " \
+			"</header> " \
+			"<section class=\"container\"> " \
+				"<form action=\"mqtt2\" method=\"post\" enctype=\"multipart/form-data\"> " \
+					"<div id=\"content\" class=\"row\"> " \
+						"<div class=\"input-group col-sm-10 col-sm-offset-0\"> " \
+							"<h2>Connect ReButton to MQTT Server</h2> " \
+							"<h3>Enable publishing message to a MQTT server.</h3>" \
+							"<h3>This can be used with or without an Azure IoT Hub or IoT Central connection.</h3>" \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTServer\">Server</label>" \
+							"<input name=\"MQTTServer\" id=\"MQTTServer\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTPort\">Port</label>" \
+							"<input name=\"MQTTPort\" id=\"MQTTPort\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTTopic\">Topic</label>" \
+							"<input name=\"MQTTTopic\" id=\"MQTTTopic\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTClient\">Client ID</label>" \
+							"<input name=\"MQTTClient\" id=\"MQTTClient\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTUser\">User</label>" \
+							"<input name=\"MQTTUser\" id=\"MQTTUser\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
+							"<label for=\"MQTTPassword\">Password</label>" \
+							"<input name=\"MQTTPassword\" id=\"MQTTPassword\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+						"</div>" \
+						"<div class=\"col-sm-10 col-sm-offset-1\"> " \
+							"<button type=\"submit\" class=\"primary\">Save</button> " \
+							"<button type=\"button\" class=\"primary\" onclick=\"location.href='/'\">Home</button>" \
+							"<button type=\"button\" class=\"primary\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
+						"</div>" \
+					"</div>" \
+				"</form> " \
+			"</section>" \
+		"</body>" \
+	"</html>";
+
+static const char* HTML_MQTT2_SUCCESS = \
+		"%s<body> " \
+			"<header> " \
+				"<h1 class=\"logo\">ReButton - MQTT Server</h1> " \
+			"</header> " \
+			"<section class=\"container\"> " \
+				"<div id=\"content\" class=\"row\" > " \
+					"<div class=\"col-sm-10 col-sm-offset-1\" style=\"text-align:center;\"> " \
+						"<h2 style=\"color:#2e7d32;\">MQTT Server saved.</h2> " \
 					"</div>" \
 					"<div class=\"col-sm-10 col-sm-offset-1\" style=\"text-align:center;\"> " \
 						"<button type=\"button\" class=\"primary\" onclick=\"location.href='/'\">Home</button>" \
@@ -606,6 +674,59 @@ static int HtmlIoTHub2PostHandler(httpd_request_t *req)
 	ConfigWrite();
 
 	String html = stringformat(strlen(HTML_IOTHUB2_SUCCESS) + strlen(HTML_HEADER), HTML_IOTHUB2_SUCCESS, HTML_HEADER);
+	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
+
+	return kNoErr;
+}
+
+static int HtmlMQTTGetHandler(httpd_request_t* req)
+{
+	AutoShutdownUpdateStartTime();
+
+	OSStatus err;
+
+	String html = stringformat(strlen(HTML_MQTT) + strlen(HTML_HEADER) + strlen(Config.MQTTServer) + strlen(Config.MQTTPort) + strlen(Config.MQTTTopic) + strlen(Config.MQTTClient) + strlen(Config.MQTTUser) + strlen(Config.MQTTPassword), HTML_MQTT, HTML_HEADER, Config.MQTTServer, Config.MQTTPort, Config.MQTTTopic, Config.MQTTClient, Config.MQTTUser, Config.MQTTPassword);
+	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
+
+	return kNoErr;
+}
+
+static int HtmlMQTT2PostHandler(httpd_request_t *req)
+{
+	AutoShutdownUpdateStartTime();
+
+	OSStatus err;
+
+	std::vector<char> buf(1000);
+
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, "multipart/form-data") == NULL) return kGeneralErr;
+	char* boundary = strstr(req->content_type, "boundary=");
+	boundary += 9;
+
+	char mqttServer[CONFIG_MQTT_SERVER_MAX_LEN + 1];
+	char mqttPort[CONFIG_MQTT_PORT_MAX_LEN + 1];
+	char mqttTopic[CONFIG_MQTT_TOPIC_MAX_LEN + 1];
+	char mqttClient[CONFIG_MQTT_CLIENT_MAX_LEN + 1];
+	char mqttUser[CONFIG_MQTT_USER_MAX_LEN + 1];
+	char mqttPassword[CONFIG_MQTT_PASSWORD_MAX_LEN + 1];
+
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTServer", mqttServer, CONFIG_MQTT_SERVER_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTPort", mqttPort, CONFIG_MQTT_PORT_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTTopic", mqttTopic, CONFIG_MQTT_TOPIC_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTClient", mqttClient, CONFIG_MQTT_CLIENT_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTUser", mqttUser, CONFIG_MQTT_USER_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "MQTTPassword", mqttPassword, CONFIG_MQTT_PASSWORD_MAX_LEN)) != kNoErr) return err;
+
+	strncpy(Config.MQTTServer, mqttServer, sizeof(Config.MQTTServer));
+	strncpy(Config.MQTTPort, mqttPort, sizeof(Config.MQTTPort));
+	strncpy(Config.MQTTTopic, mqttTopic, sizeof(Config.MQTTTopic));
+	strncpy(Config.MQTTClient, mqttClient, sizeof(Config.MQTTClient));
+	strncpy(Config.MQTTUser, mqttUser, sizeof(Config.MQTTUser));
+	strncpy(Config.MQTTPassword, mqttPassword, sizeof(Config.MQTTPassword));
+	ConfigWrite();
+
+	String html = stringformat(strlen(HTML_MQTT2_SUCCESS) + strlen(HTML_HEADER), HTML_MQTT2_SUCCESS, HTML_HEADER);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -1211,6 +1332,8 @@ static struct httpd_wsgi_call g_app_handlers[] =
 	{ "/iotcentral2"   , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlIoTCentral2PostHandler    , NULL, NULL },
 	{ "/iothub"        , HTTPD_HDR_DEFORT, 0, HtmlIoTHubGetHandler        , NULL                          , NULL, NULL },
 	{ "/iothub2"       , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlIoTHub2PostHandler        , NULL, NULL },
+	{ "/mqtt"     	   , HTTPD_HDR_DEFORT, 0, HtmlMQTTGetHandler          , NULL                          , NULL, NULL },
+	{ "/mqtt2"         , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlMQTT2PostHandler          , NULL, NULL },
 	{ "/message"       , HTTPD_HDR_DEFORT, 0, HtmlMessageGetHandler       , NULL                          , NULL, NULL },
 	{ "/message2"      , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlMessage2PostHandler       , NULL, NULL },
 	{ "/firmware"      , HTTPD_HDR_DEFORT, 0, HtmlFirmwareUpdateGetHandler, NULL                          , NULL, NULL },

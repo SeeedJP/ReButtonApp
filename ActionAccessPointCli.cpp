@@ -42,6 +42,12 @@ static void az_scopeid_command(int argc, char **argv);
 static void az_deviceid_command(int argc, char **argv);
 static void az_saskey_command(int argc, char **argv);
 static void az_iothub_command(int argc, char **argv);
+static void mqtt_server_command(int argc, char **argv);
+static void mqtt_port_command(int argc, char **argv);
+static void mqtt_topic_command(int argc, char **argv);
+static void mqtt_client_command(int argc, char **argv);
+static void mqtt_user_command(int argc, char **argv);
+static void mqtt_password_command(int argc, char **argv);
 static void apmode_ssid_command(int argc, char **argv);
 static void apmode_pwd_Command(int argc, char **argv);
 
@@ -59,6 +65,12 @@ static const struct console_command cmds[] =
   {"set_az_deviceid"       , "Set device id of Azure IoT Central"           , false, az_deviceid_command            },
   {"set_az_saskey"         , "Set SAS key of Azure IoT Central"             , true , az_saskey_command              },
   {"set_az_iothub"         , "Set the connection string of Azure IoT Hub"   , true , az_iothub_command              },
+  {"set_mqtt_server"       , "Set the MQTT server address"                  , false, mqtt_server_command            },
+  {"set_mqtt_port"         , "Set the MQTT port"                            , false, mqtt_port_command              },
+  {"set_mqtt_topic"        , "Set the MQTT topic"                           , false, mqtt_topic_command             },
+  {"set_mqtt_client"       , "Set the MQTT client"                          , false, mqtt_client_command            },
+  {"set_mqtt_user"         , "Set the MQTT user"                            , false, mqtt_user_command              },
+  {"set_mqtt_password"     , "Set the MQTT port"                            , true , mqtt_password_command          },
   {"set_apmodessid"        , "Set AP mode SSID"                             , false, apmode_ssid_command            },
   {"set_apmodepwd"         , "Set AP mode password"                         , true , apmode_pwd_Command             },
 };
@@ -261,6 +273,126 @@ static void az_iothub_command(int argc, char **argv)
 
     ConfigWrite();
     Serial.printf("INFO: Set Azure Iot hub connection string successfully.\r\n");
+}
+
+static void mqtt_server_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_server <url or ip address>. Please provide the server address of the MQTT server.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_SERVER_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT server address.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTServer, argv[1], CONFIG_MQTT_SERVER_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT Server address successfully.\r\n");
+}
+
+static void mqtt_port_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_port <port>. Please provide the MQTT port.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_PORT_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT port.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTPort, argv[1], CONFIG_MQTT_PORT_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT port successfully.\r\n");
+}
+
+static void mqtt_topic_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_topic <topic>. Please provide the MQTT topic.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_TOPIC_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT topic.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTPort, argv[1], CONFIG_MQTT_TOPIC_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT topic successfully.\r\n");
+}
+
+static void mqtt_client_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_client <client id>. Please provide the MQTT client id.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_CLIENT_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT client id.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTPort, argv[1], CONFIG_MQTT_CLIENT_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT client id successfully.\r\n");
+}
+
+static void mqtt_user_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_user <username>. Please provide the MQTT username.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_USER_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT username.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTPort, argv[1], CONFIG_MQTT_USER_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT username successfully.\r\n");
+}
+
+static void mqtt_password_command(int argc, char **argv)
+{
+    if (argc == 1 || argv[1] == NULL) 
+    {
+        Serial.printf("Usage: set_mqtt_password <password>. Please provide the MQTT password.\r\n");
+        return;
+    }
+    int len = strlen(argv[1]);
+    if (len == 0 || len > CONFIG_MQTT_PASSWORD_MAX_LEN)
+    {
+        Serial.printf("Invalid MQTT password.\r\n");
+        return;
+    }
+
+    strncpy(Config.MQTTPort, argv[1], CONFIG_MQTT_PASSWORD_MAX_LEN + 1);
+
+    ConfigWrite();
+    Serial.printf("INFO: Set MQTT password successfully.\r\n");
 }
 
 static void apmode_ssid_command(int argc, char **argv)

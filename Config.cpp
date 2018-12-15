@@ -67,6 +67,13 @@ void ConfigResetFactorySettings()
 
     strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 
+    strncpy_w_zero(Config.MQTTServer, "", sizeof(Config.MQTTServer));
+	strncpy_w_zero(Config.MQTTPort, "", sizeof(Config.MQTTPort));
+	strncpy_w_zero(Config.MQTTTopic, "", sizeof(Config.MQTTTopic));
+    strncpy_w_zero(Config.MQTTClient, "", sizeof(Config.MQTTClient));
+	strncpy_w_zero(Config.MQTTUser, "", sizeof(Config.MQTTUser));
+	strncpy_w_zero(Config.MQTTPassword, "", sizeof(Config.MQTTPassword));
+
 	strncpy_w_zero(Config.APmodeSSID, ssid, sizeof(Config.APmodeSSID));
 	strncpy_w_zero(Config.APmodePassword, "", sizeof(Config.APmodePassword));
 }
@@ -106,7 +113,7 @@ void ConfigPrint()
 	Serial.printf("WiFiSSID = %s\n", Config.WiFiSSID);
     //Serial.printf("WiFiPassword = %s\n", Config.WiFiPassword);
 	Serial.printf("TimeServer = %s\n", Config.TimeServer);
-	Serial.printf("IoTHubConnectionString = %s\n", Config.IoTHubConnectionString);
+	//Serial.printf("IoTHubConnectionString = %s\n", Config.IoTHubConnectionString);
 	Serial.printf("APmodeSSID = %s\n", Config.APmodeSSID);
 	//Serial.printf("APmodePassword = %s\n", Config.APmodePassword);
 }
