@@ -8,6 +8,8 @@
 #include <parson.h>
 #include "ReButtonClient.h"
 #include <SystemTime.h>
+#include "MQTTClient.h"
+#include "MQTTNetwork.h"
 
 static String stringformat(const char* format, ...)
 {
@@ -151,75 +153,124 @@ bool ActionSendMessage(ACTION_TYPE action)
     IPAddress ip = WiFi.localIP();
     Serial.printf("ActionSendMessage() : IP address is %s.\n", ip.get_address());
 
-  	////////////////////
-  	// Initialize IoTHub client
+    ////////////////////
+    // Check if IoTHub parameters are set
+    if (strlen(Config.IoTHubConnectionString) > 0 || (strlen(Config.ScopeId) >= 1 && strlen(Config.DeviceId) >= 1 && strlen(Config.SasKey) >= 1)){
 
-	ReButtonClient client;
-    if (!client.Connect(&DeviceTwinUpdateCallbackFunc))
-    {
-        Serial.println("ActionSendMessage() : IoT Hub Connection failed");
-        return false;
+        ////////////////////
+        // Initialize IoTHub client
+
+        ReButtonClient client;
+        if (!client.Connect(&DeviceTwinUpdateCallbackFunc))
+        {
+            Serial.println("ActionSendMessage() : IoT Hub Connection failed");
+            return false;
+        }
+
+        ////////////////////
+        // Make sure we are connected
+
+        Serial.println("ActionSendMessage() : Wait for connected.");
+        while (!client.IsConnected())
+        {
+            client.DoWork();
+            wait_ms(100);
+        }
+
+        ////////////////////
+        // Make sure we are received Twin Update
+
+        Serial.println("ActionSendMessage() : Wait for DeviceTwin received.");
+        while (!DeviceTwinReceived)
+        {
+            client.DoWork();
+            wait_ms(100);
+        }
+
+        ////////////////////
+        // Send message
+
+        String payload = MakeMessageJsonString(action);
+        if (!client.SendMessageAsync(payload.c_str()))
+        {
+            Serial.println("ActionSendMessage() : SendEventAsync failed");
+            return false;
+        }
+
+        while (!client.IsMessageSent())
+        {
+            client.DoWork();
+            wait_ms(100);
+        }
+
+        while (!client.IsAllEventsSent())
+        {
+            client.DoWork();
+            wait_ms(100);
+        }
+
+        ////////////////////
+        // Report status
+
+        client.DeviceTwinReport(MakeReportJsonString().c_str());
+
+        while (!client.IsDeviceTwinReported())
+        {
+            client.DoWork();
+            wait_ms(100);
+        }
+
+        ////////////////////
+        // Disconnect IoTHub
+
+        client.Disconnect();
     }
 
     ////////////////////
-    // Make sure we are connected
+    // Check if MQTT Parameters are set
+    if (strlen(Config.MQTTServer) >= 1 && strlen(Config.MQTTPort) >= 1 && strlen(Config.MQTTTopic) >= 1 && strlen(Config.MQTTClient) >= 1){
 
-	Serial.println("ActionSendMessage() : Wait for connected.");
-    while (!client.IsConnected())
-    {
-		client.DoWork();
-		wait_ms(100);
+        ////////////////////
+        // Publish  MQTT Topic
+        MQTTNetwork mqttNetwork;
+        MQTT::Client<MQTTNetwork, Countdown> mqttClient = MQTT::Client<MQTTNetwork, Countdown>(mqttNetwork); 
+
+        Serial.printf("Connecting to MQTT server %s:%s", Config.MQTTServer, Config.MQTTPort);
+
+        int rc = mqttNetwork.connect(Config.MQTTServer, atoi(Config.MQTTPort));
+        if (rc != 0) {
+            Serial.println("Connected to MQTT server failed");
+        } else {
+            Serial.println("Connected to MQTT server successfully");
+        }
+
+        MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+        data.MQTTVersion = 3;
+        data.clientID.cstring = Config.MQTTClient;
+        data.username.cstring = Config.MQTTUser;
+        data.password.cstring = Config.MQTTPassword;
+        if ((rc = mqttClient.connect(data)) != 0) {
+            Serial.println("MQTT client connect to server failed");
+        }
+
+        MQTT::Message message;
+
+        // QoS 0
+        char buf[256];
+        String payload = MakeMessageJsonString(action);
+        sprintf(buf, payload.c_str());
+        message.qos = MQTT::QOS0;
+        message.retained = false;
+        message.dup = false;
+        message.payload = (void*)buf;
+        message.payloadlen = strlen(buf);
+        rc = mqttClient.publish(Config.MQTTTopic, message);
+
+        if ((rc = mqttClient.disconnect()) != 0) {
+            Serial.println("MQTT client disconnect from server failed");
+        }
     }
-
-    ////////////////////
-    // Make sure we are received Twin Update
-
-	Serial.println("ActionSendMessage() : Wait for DeviceTwin received.");
-	while (!DeviceTwinReceived)
-    {
-		client.DoWork();
-		wait_ms(100);
-    }
-
-	////////////////////
-	// Send message
-
-    String payload = MakeMessageJsonString(action);
-    if (!client.SendMessageAsync(payload.c_str()))
-	{
-		Serial.println("ActionSendMessage() : SendEventAsync failed");
-		return false;
-	}
-
-    while (!client.IsMessageSent())
-    {
-		client.DoWork();
-		wait_ms(100);
-    }
-
-	while (!client.IsAllEventsSent())
-    {
-		client.DoWork();
-		wait_ms(100);
-    }
-
-	////////////////////
-	// Report status
-
-	client.DeviceTwinReport(MakeReportJsonString().c_str());
-
-    while (!client.IsDeviceTwinReported())
-    {
-		client.DoWork();
-		wait_ms(100);
-    }
-
-	////////////////////
-	// Disconnect IoTHub
-
-	client.Disconnect();
-
-
+    
     Serial.println("Complete");
 
     return true;
