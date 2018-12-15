@@ -298,7 +298,7 @@ static const char* HTML_MQTT = \
 						"</div>" \
 						"<div class=\"input-group col-sm-10 col-sm-offset-1\"> " \
 							"<label for=\"MQTTPassword\">Password</label>" \
-							"<input name=\"MQTTPassword\" id=\"MQTTPassword\" value=\"%s\" type=\"text\" style=\"width:100%%;\"> " \
+							"<input name=\"MQTTPassword\" id=\"MQTTPassword\" value=\"%s\" type=\"password\" style=\"width:100%%;\"> " \
 						"</div>" \
 						"<div class=\"col-sm-10 col-sm-offset-1\"> " \
 							"<button type=\"submit\" class=\"primary\">Save</button> " \
