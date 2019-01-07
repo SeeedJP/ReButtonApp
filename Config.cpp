@@ -106,7 +106,7 @@ void ConfigPrint()
 	Serial.printf("WiFiSSID = %s\n", Config.WiFiSSID);
     //Serial.printf("WiFiPassword = %s\n", Config.WiFiPassword);
 	Serial.printf("TimeServer = %s\n", Config.TimeServer);
-	Serial.printf("IoTHubConnectionString = %s\n", Config.IoTHubConnectionString);
+	//Serial.printf("IoTHubConnectionString = %s\n", Config.IoTHubConnectionString);
 	Serial.printf("APmodeSSID = %s\n", Config.APmodeSSID);
 	//Serial.printf("APmodePassword = %s\n", Config.APmodePassword);
 }
