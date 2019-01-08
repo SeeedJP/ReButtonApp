@@ -228,6 +228,9 @@ bool ReButtonClient::SendMessageAsync(const char* payload)
 	//	Serial.println("Adding timestampe property failed");
 	//}
 
+	IoTHubMessage_SetContentEncodingSystemProperty(_MessageHandle, "utf-8");
+	IoTHubMessage_SetContentTypeSystemProperty(_MessageHandle, "application%2fjson");
+
 	Serial.printf("SendMessageAsync() \n%s\r\n", payload);
 	if (IoTHubClient_LL_SendEventAsync(_ClientHandle, _MessageHandle, SendEventCallback, this) != IOTHUB_CLIENT_OK)
 	{
