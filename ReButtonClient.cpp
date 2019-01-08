@@ -231,6 +231,9 @@ bool ReButtonClient::SendMessageAsync(const char* payload)
 	IoTHubMessage_SetContentEncodingSystemProperty(_MessageHandle, "utf-8");
 	IoTHubMessage_SetContentTypeSystemProperty(_MessageHandle, "application%2fjson");
 
+	MAP_HANDLE propMap = IoTHubMessage_Properties(_MessageHandle);
+	Map_AddOrUpdate(propMap, "productId", Config.ProductId);
+
 	Serial.printf("SendMessageAsync() \n%s\r\n", payload);
 	if (IoTHubClient_LL_SendEventAsync(_ClientHandle, _MessageHandle, SendEventCallback, this) != IOTHUB_CLIENT_OK)
 	{

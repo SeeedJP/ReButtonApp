@@ -53,7 +53,9 @@ void ConfigResetFactorySettings()
     strncpy_w_zero(Config.Message10, "Long press", sizeof(Config.Message10));
     strncpy_w_zero(Config.Message11, "Super long press", sizeof(Config.Message11));
 
-    strncpy_w_zero(Config.CustomMessagePropertyName, "customMessageEnable", sizeof(Config.CustomMessagePropertyName));
+	strncpy_w_zero(Config.ProductId, "ReButton", sizeof(Config.ProductId));
+
+	strncpy_w_zero(Config.CustomMessagePropertyName, "customMessageEnable", sizeof(Config.CustomMessagePropertyName));
     Config.CustomMessageEnable = false;
     strncpy_w_zero(Config.CustomMessageJson, "\"message\":\"Custom message\"", sizeof(Config.CustomMessageJson));
 
@@ -103,6 +105,7 @@ void ConfigPrint()
     //Serial.printf("Message3 = %s\n", Config.Message3);
     //Serial.printf("Message10 = %s\n", Config.Message10);
     //Serial.printf("Message11 = %s\n", Config.Message11);
+	//Serial.printf("ProductId = %s\n", Config.ProductId);
 	Serial.printf("WiFiSSID = %s\n", Config.WiFiSSID);
     //Serial.printf("WiFiPassword = %s\n", Config.WiFiPassword);
 	Serial.printf("TimeServer = %s\n", Config.TimeServer);

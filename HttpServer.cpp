@@ -363,6 +363,12 @@ static const char* HTML_MESSAGE = \
 						"</div>" \
 					"</div>" \
 					"<div class=\"row\">" \
+						"<label class=\"col-12\" for=\"ProductId\">Product Id</label>" \
+						"<div class=\"col-12\">" \
+							"<input name=\"ProductId\" id=\"ProductId\" value=\"%s\" type=\"text\">" \
+						"</div>" \
+					"</div>" \
+					"<div class=\"row\">" \
 						"<button class=\"col-md-2 offset-md-1\" type=\"submit\">Save</button>" \
 						"<button class=\"col-md-2 offset-md-3\" type=\"button\" onclick=\"location.href='/'\">Home</button>" \
 						"<button class=\"col-md-2\" type=\"button\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
@@ -753,7 +759,7 @@ static int HtmlMessageGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_MESSAGE) + strlen(Config.Message1) + strlen(Config.Message2) + strlen(Config.Message3) + strlen(Config.Message10) + strlen(Config.Message11), HTML_MESSAGE, Config.Message1, Config.Message2, Config.Message3, Config.Message10, Config.Message11);
+	String html = stringformat(strlen(HTML_MESSAGE) + strlen(Config.Message1) + strlen(Config.Message2) + strlen(Config.Message3) + strlen(Config.Message10) + strlen(Config.Message11) + strlen(Config.ProductId), HTML_MESSAGE, Config.Message1, Config.Message2, Config.Message3, Config.Message10, Config.Message11, Config.ProductId);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -777,18 +783,21 @@ static int HtmlMessage2PostHandler(httpd_request_t *req)
 	char message3[CONFIG_MESSAGE_MAX_LEN + 1];
 	char message10[CONFIG_MESSAGE_MAX_LEN + 1];
 	char message11[CONFIG_MESSAGE_MAX_LEN + 1];
+	char productId[CONFIG_PRODUCT_ID_MAX_LEN + 1];
 
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message1", message1, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message2", message2, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message3", message3, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message10", message10, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message11", message11, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "ProductId", productId, CONFIG_PRODUCT_ID_MAX_LEN)) != kNoErr) return err;
 
 	strncpy(Config.Message1, message1, sizeof(Config.Message1));
 	strncpy(Config.Message2, message2, sizeof(Config.Message2));
 	strncpy(Config.Message3, message3, sizeof(Config.Message3));
 	strncpy(Config.Message10, message10, sizeof(Config.Message10));
 	strncpy(Config.Message11, message11, sizeof(Config.Message11));
+	strncpy(Config.ProductId, productId, sizeof(Config.ProductId));
 	ConfigWrite();
 
 	String html = stringformat(strlen(HTML_MESSAGE2_SUCCESS), HTML_MESSAGE2_SUCCESS);

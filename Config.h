@@ -8,6 +8,7 @@ extern const char* CONFIG_FIRMWARE_VERSION;
 #define CONFIG_AUTO_SHUTDOWN_TIMEOUT_AP			(600000)	// [msec.]
 
 #define CONFIG_MESSAGE_MAX_LEN					(32)
+#define CONFIG_PRODUCT_ID_MAX_LEN				(32)
 #define CONFIG_PROPERTY_NAME_MAX_LEN			(32)
 #define CONFIG_CUSTOM_MESSAGE_JSON_MAX_LEN		(200)
 #define CONFIG_WIFI_SSID_MAX_LEN				(32)
@@ -34,6 +35,8 @@ struct CONFIG_TYPE
 	char Message3[CONFIG_MESSAGE_MAX_LEN + 1];
 	char Message10[CONFIG_MESSAGE_MAX_LEN + 1];
 	char Message11[CONFIG_MESSAGE_MAX_LEN + 1];
+
+	char ProductId[CONFIG_PRODUCT_ID_MAX_LEN + 1];
 
 	char CustomMessagePropertyName[CONFIG_PROPERTY_NAME_MAX_LEN + 1];
 	bool CustomMessageEnable;
