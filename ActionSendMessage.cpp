@@ -9,6 +9,76 @@
 #include "ReButtonClient.h"
 #include <SystemTime.h>
 
+class GroveUltrasonicRanger
+{
+private:
+	DigitalInOut* _Pin;
+
+	unsigned long MicrosDiff(unsigned long begin, unsigned long end);
+	unsigned long PulseIn(int state, unsigned long timeout = 1000000);
+
+public:
+	float Distance;
+
+public:
+	GroveUltrasonicRanger(DigitalInOut* pin)
+	{
+		_Pin = pin;
+	}
+
+	void Init();
+	void Read();
+
+};
+
+unsigned long GroveUltrasonicRanger::MicrosDiff(unsigned long begin, unsigned long end)
+{
+	return end - begin;
+}
+
+unsigned long GroveUltrasonicRanger::PulseIn(int state, unsigned long timeout)
+{
+	auto begin = micros();
+
+	// wait for any previous pulse to end
+	while (_Pin->read() == state) if (MicrosDiff(begin, micros()) >= timeout) return 0;
+
+	// wait for the pulse to start
+	while (_Pin->read() != state) if (MicrosDiff(begin, micros()) >= timeout) return 0;
+	auto pulseBegin = micros();
+
+	// wait for the pulse to stop
+	while (_Pin->read() == state) if (MicrosDiff(begin, micros()) >= timeout) return 0;
+	auto pulseEnd = micros();
+
+	return MicrosDiff(pulseBegin, pulseEnd);
+}
+
+void GroveUltrasonicRanger::Init()
+{
+	_Pin->input();
+	_Pin->write(0);
+}
+
+void GroveUltrasonicRanger::Read()
+{
+	_Pin->output();
+	_Pin->write(1);
+	wait_ms(10);
+
+	_Pin->write(0);
+	_Pin->input();
+
+	auto duration = PulseIn(1);
+	if (duration == 0)
+	{
+		Distance = 0;
+		return;
+	}
+
+	Distance = (float)duration * 0.34f / 2.0f;
+}
+
 static String stringformat(const char* format, ...)
 {
     va_list args;
@@ -59,7 +129,7 @@ static const char* ActionToMessage(ACTION_TYPE action)
     }
 }
 
-static String MakeMessageJsonString(ACTION_TYPE action)
+static String MakeMessageJsonString(ACTION_TYPE action, double distance)
 {
     String payload = "{";
     payload += String("\"actionNum\":\"") + String(ActionToActionNum(action)) + String("\"");
@@ -69,7 +139,8 @@ static String MakeMessageJsonString(ACTION_TYPE action)
 	{
 		payload += stringformat(",\"customMessage\":{%s}", Config.CustomMessageJson);
 	}
-    payload += "}";
+	payload += String(",\"distance\":") + String(distance);
+	payload += "}";
 
 	return payload;
 }
@@ -182,9 +253,53 @@ bool ActionSendMessage(ACTION_TYPE action)
     }
 
 	////////////////////
+	// Read sensor value
+
+	//I2C i2c(PB_9, PB_8);
+
+	//char data[6];
+	//data[0] = 0x2d;
+	//data[1] = 0x08;
+	//i2c.write(0x53 << 1, data, 2);
+
+	//for (;;)
+	//{
+	//	data[0] = 0x32;
+	//	i2c.write(0x53 << 1, data, 1);
+	//	i2c.read(0x53 << 1, data, 6);
+	//	int16_t val;
+	//	((uint8_t*)&val)[0] = data[0];
+	//	((uint8_t*)&val)[1] = data[1];
+	//	float x = val * 2.0 / 512;
+	//	((uint8_t*)&val)[0] = data[2];
+	//	((uint8_t*)&val)[1] = data[3];
+	//	float y = val * 2.0 / 512;
+	//	((uint8_t*)&val)[0] = data[4];
+	//	((uint8_t*)&val)[1] = data[5];
+	//	float z = val * 2.0 / 512;
+
+	//	Serial.printf("%.2f, %.2f, %.2f\n", x, y, z);
+
+	//	delay(100);
+	//}
+
+	DigitalInOut pin(PB_8);
+	GroveUltrasonicRanger ranger(&pin);
+	ranger.Init();
+	float distance = 0;
+	for (int i = 0; i < 5; i++)
+	{
+		ranger.Read();
+		distance += ranger.Distance;
+		Serial.printf("Ranger = %.0f[mm]\n", ranger.Distance);
+		wait_ms(100);
+	}
+	distance /= 5;
+
+	////////////////////
 	// Send message
 
-    String payload = MakeMessageJsonString(action);
+    String payload = MakeMessageJsonString(action, distance);
     if (!client.SendMessageAsync(payload.c_str()))
 	{
 		Serial.println("ActionSendMessage() : SendEventAsync failed");
