@@ -1126,432 +1126,121 @@ static int HtmlShutdownGetHandler(httpd_request_t* req)
 ////////////////////////////////////////////////////////////////////////////////////
 // REST handlers
 
-static int RestConfigGetHandler(httpd_request_t *req)
+static int RestWiFiPostHandler(httpd_request_t* req)
 {
-  Serial.println(__FUNCTION__);
-  int err = kNoErr;
-  return err;
+	AutoShutdownUpdateStartTime();
+
+	OSStatus err;
+
+	std::vector<char> buf(1000);
+
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) == NULL) return kGeneralErr;
+
+	JSON_Value* root_value = json_parse_string(&buf[0]);
+	if (json_value_get_type(root_value) != JSONObject) return kGeneralErr;
+	JSON_Object* root_object = json_value_get_object(root_value);
+	const char* value;
+	if ((value = json_object_get_string(root_object, "ssid")) == NULL) return kGeneralErr;
+	String wifiSSID(value);
+	if ((value = json_object_get_string(root_object, "password")) == NULL) return kGeneralErr;
+	String wifiPassword(value);
+	if ((value = json_object_get_string(root_object, "timeserver")) == NULL) return kGeneralErr;
+	String timeServer(value);
+	json_value_free(root_value);
+
+	strncpy(Config.WiFiSSID, wifiSSID.c_str(), sizeof(Config.WiFiSSID));
+	strncpy(Config.WiFiPassword, wifiPassword.c_str(), sizeof(Config.WiFiPassword));
+	strncpy(Config.TimeServer, timeServer.c_str(), sizeof(Config.TimeServer));
+	ConfigWrite();
+
+	if ((err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR)) != kNoErr) return err;
+
+	return kNoErr;
 }
 
-static int RestConfigPostHandler(httpd_request_t *req)
+static int RestIoTCentralPostHandler(httpd_request_t *req)
 {
-  Serial.println(__FUNCTION__);
-  OSStatus err = kNoErr;
-  return err;  
-}
+	AutoShutdownUpdateStartTime();
 
-/*
-* REST API for IoT Hub
-*/
-static char *GetHostNameFromConnectionString(char *connectionString)
-{
-    if (connectionString == NULL)
-    {
-        return NULL;
-    }
-    int start = 0;
-    int cur = 0;
-    bool find = false;
-    while (connectionString[cur] > 0)
-    {
-        if (connectionString[cur] == '=')
-        {
-            // Check the key
-            if (memcmp(&connectionString[start], "HostName", 8) == 0)
-            {
-                // This is the host name
-                find = true;
-            }
-            start = ++cur;
-            // Value
-            while (connectionString[cur] > 0)
-            {
-                if (connectionString[cur] == ';')
-                {
-                    break;
-                }
-                cur++;
-            }
-            if (find && cur - start > 0)
-            {
-                char *hostname = (char *)malloc(cur - start + 1);
-                memcpy(hostname, &connectionString[start], cur - start);
-                hostname[cur - start] = 0;
-                return hostname;
-            }
-            start = cur + 1;
-        }
-        cur++;
-    }
-    return NULL;
-}
+	OSStatus err;
 
-static char *GetDeviceNameFromConnectionString(char *connectionString)
-{
-    if (connectionString == NULL)
-    {
-        return NULL;
-    }
-    int start = 0;
-    int cur = 0;
-    bool find = false;
-    while (connectionString[cur] > 0)
-    {
-        if (connectionString[cur] == '=')
-        {
-            // Check the key
-            if (memcmp(&connectionString[start], "DeviceId", 8) == 0)
-            {
-                // This is the device id
-                find = true;
-            }
-            start = ++cur;
-            // Value
-            while (connectionString[cur] > 0)
-            {
-                if (connectionString[cur] == ';')
-                {
-                    break;
-                }
-                cur++;
-            }
-            if (find && cur - start > 0)
-            {
-                char *deviceName = (char *)malloc(cur - start + 1);
-                memcpy(deviceName, &connectionString[start], cur - start);
-                deviceName[cur - start] = 0;
-                return deviceName;
-            }
-            start = cur + 1;
-        }
-        cur++;
-    }
-    return NULL;
-}
+	std::vector<char> buf(1000);
 
-static int RestIoTHubGetHandler(httpd_request_t *req)
-{
-  Serial.println(__FUNCTION__);
-  EEPROMInterface eeprom;
-  JSON_Value *root_value = json_value_init_object();
-  JSON_Object *root_object = json_value_get_object(root_value);
-  char *serialized_string = NULL;
-  char *connString[AZ_IOT_HUB_MAX_LEN + 1] = { '\0' };
-  int err = kNoErr;
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) == NULL) return kGeneralErr;
 
-  int ret = eeprom.read((uint8_t*)connString, AZ_IOT_HUB_MAX_LEN, 0x00, AZ_IOT_HUB_ZONE_IDX);
+	JSON_Value* root_value = json_parse_string(&buf[0]);
+	if (json_value_get_type(root_value) != JSONObject) return kGeneralErr;
+	JSON_Object* root_object = json_value_get_object(root_value);
+	const char* value;
+	if ((value = json_object_get_string(root_object, "scopeid")) == NULL) return kGeneralErr;
+	String scopeId(value);
+	if ((value = json_object_get_string(root_object, "deviceid")) == NULL) return kGeneralErr;
+	String deviceId(value);
+	if ((value = json_object_get_string(root_object, "saskey")) == NULL) return kGeneralErr;
+	String sasKey(value);
+	json_value_free(root_value);
 
-  if (ret < 0)
-  {
-      Serial.println("Unable to get the azure iot connection string from EEPROM. Please set the value in configuration mode.");
-      return kGeneralErr;
-  }
+	strncpy(Config.ScopeId, scopeId.c_str(), sizeof(Config.ScopeId));
+	strncpy(Config.DeviceId, deviceId.c_str(), sizeof(Config.DeviceId));
+	strncpy(Config.SasKey, sasKey.c_str(), sizeof(Config.SasKey));
+	ConfigWrite();
 
-  char *iothub_hostname = GetHostNameFromConnectionString((char *)connString);
-  char *iothub_deviceid = GetDeviceNameFromConnectionString((char *)connString);
+	if ((err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR)) != kNoErr) return err;
 
-  json_object_set_string(root_object, "iothub", iothub_hostname);
-  json_object_set_string(root_object, "iotdevicename", iothub_deviceid);
-  json_object_set_string(root_object, "iotdevicesecret", (char *)connString);
-  serialized_string = json_serialize_to_string_pretty(root_value);
-  puts(serialized_string);
-
-  int json_length = strlen(serialized_string);
-    
-  err = httpd_send_all_header(req, HTTP_RES_200, json_length, HTTP_CONTENT_JSON_STR);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http headers.") );
-
-  err = httpd_send_body(req->sock, (const unsigned char*)serialized_string, json_length);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http body.") );
-
-exit:
-  if (serialized_string)
-  {
-    json_free_serialized_string(serialized_string);
-    json_value_free(root_value);
-  }
-
-  if (iothub_hostname)
-  {
-    free(iothub_hostname);
-  }
-
-  if (iothub_deviceid)
-  {
-    free(iothub_deviceid);
-  }
-  return err;
+	return kNoErr;
 }
 
 static int RestIoTHubPostHandler(httpd_request_t *req)
 {
-  Serial.println(__FUNCTION__);
+	AutoShutdownUpdateStartTime();
 
-  EEPROMInterface eeprom;
-  OSStatus err = kNoErr;
-  int buf_size = 1000;
-  char *buf;
+	OSStatus err;
 
-  buf = (char *)malloc(buf_size);
-  err = httpd_get_data(req, buf, buf_size);
-  app_httpd_log("httpd_get_data return value: %d", err);
-  require_noerr( err, Save_Out );
-  
-  if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) != NULL)
-  {
-    JSON_Value *root_value = NULL;
-    root_value = json_parse_string(buf);
-    JSON_Object *root_object;
+	std::vector<char> buf(1000);
 
-    if (json_value_get_type(root_value) == JSONObject)
-    {
-        root_object = json_value_get_object(root_value);
-        const char *strConnString = json_object_get_string(root_object, "connectionstring");
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) == NULL) return kGeneralErr;
 
-        err = write_eeprom((char *)strConnString, AZ_IOT_HUB_ZONE_IDX);
+	JSON_Value* root_value = json_parse_string(&buf[0]);
+	if (json_value_get_type(root_value) != JSONObject) return kGeneralErr;
+	JSON_Object* root_object = json_value_get_object(root_value);
+	const char* value;
+	if ((value = json_object_get_string(root_object, "connectionstring")) == NULL) return kGeneralErr;
+	String connectionString(value);
+	json_value_free(root_value);
 
-        if (err != 0)
-        {
-          return false;
-        }
+	strncpy(Config.IoTHubConnectionString, connectionString.c_str(), sizeof(Config.IoTHubConnectionString));
+	ConfigWrite();
 
-        Serial.println(strConnString);
+	if ((err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR)) != kNoErr) return err;
 
-        if(root_value)
-        {
-          json_value_free(root_value);
-        }
-    }
-  }
-
-Save_Out:
-
-  err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR);
-
-exit:
-  return err;  
+	return kNoErr;
 }
 
-/*
-* REST API for WiFi
-*/
-
-static int RestWiFiGetHandler(httpd_request_t *req)
+static int RestShutdownPostHandler(httpd_request_t *req)
 {
-  Serial.println(__FUNCTION__);
+	AutoShutdownUpdateStartTime();
 
-  EEPROMInterface eeprom;
-  char ssid[WIFI_SSID_MAX_LEN + 1] = { 0 };
-  char pwd[WIFI_PWD_MAX_LEN + 1] = { 0 };
+	OSStatus err;
 
-  int ret = eeprom.read((uint8_t*)ssid, WIFI_SSID_MAX_LEN, 0x00, WIFI_SSID_ZONE_IDX);
+	std::vector<char> buf(1000);
 
-  if (ret < 0)
-  {
-      Serial.print("ERROR: Failed to get the Wi-Fi SSID from EEPROM.\r\n");
-      return false;
-  }
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) == NULL) return kGeneralErr;
 
-  ret = eeprom.read((uint8_t*)pwd, WIFI_PWD_MAX_LEN, 0x00, WIFI_PWD_ZONE_IDX);
-  if (ret < 0)
-  {
-      Serial.print("ERROR: Failed to get the Wi-Fi password from EEPROM.\r\n");
-      return false;
-  }
+	JSON_Value* root_value = json_parse_string(&buf[0]);
+	if (json_value_get_type(root_value) != JSONObject) return kGeneralErr;
+	JSON_Object* root_object = json_value_get_object(root_value);
+	if (json_object_get_boolean(root_object, "force") != 1) return kGeneralErr;
+	json_value_free(root_value);
 
-  JSON_Value *root_value = json_value_init_object();
-  JSON_Object *root_object = json_value_get_object(root_value);
-  char *serialized_string = NULL;
+	if ((err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR)) != kNoErr) return err;
 
-  json_object_set_string(root_object, "ssid", ssid);
-  json_object_set_string(root_object, "password", pwd);
-  serialized_string = json_serialize_to_string_pretty(root_value);
-  puts(serialized_string);
+	AutoShutdownSetTimeout(5000);
 
-  int json_length = strlen(serialized_string);
-  int err = kNoErr;
-    
-  err = httpd_send_all_header(req, HTTP_RES_200, json_length, HTTP_CONTENT_JSON_STR);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http headers.") );
-
-  err = httpd_send_body(req->sock, (const unsigned char*)serialized_string, json_length);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http body.") );
-
-exit:
-  if (serialized_string)
-  {
-    json_free_serialized_string(serialized_string);
-    json_value_free(root_value);
-  }
-  return err;
-}
-
-static int RestWiFiPostHandler(httpd_request_t *req)
-{
-  Serial.println(__FUNCTION__);
-  OSStatus err = kNoErr;
-  int buf_size = 1000;
-  char *buf;
-
-  buf = (char *)malloc(buf_size);
-  err = httpd_get_data(req, buf, buf_size);
-  app_httpd_log("httpd_get_data return value: %d", err);
-  require_noerr( err, Save_Out );
-  
-  if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) != NULL)
-  {
-    JSON_Value *root_value = NULL;
-    root_value = json_parse_string(buf);
-    JSON_Object *root_object;
-
-    if (json_value_get_type(root_value) == JSONObject)
-    {
-      root_object = json_value_get_object(root_value);
-      const char *strSSID = json_object_get_string(root_object, "ssid");
-      const char *strPASS = json_object_get_string(root_object, "password");
-      
-      err = write_eeprom((char *)strSSID, WIFI_SSID_ZONE_IDX);
-      if (err != 0)
-      {
-        return false;
-      }
-      err = write_eeprom((char *)strPASS, WIFI_PWD_ZONE_IDX);
-      if (err != 0)
-      {
-        return false;
-      }
-
-      if(root_value)
-      {
-        json_value_free(root_value);
-      }
-    }
-  }
-
-Save_Out:
-
-  err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR);
-
-exit:
-  return err;  
-}
-
-/*
-* REST API for timeserver
-*/
-static int RestTimeServerGetHandler(httpd_request_t *req)
-{
-  Serial.println(__FUNCTION__);
-  JSON_Value *root_value = json_value_init_object();
-  JSON_Object *root_object = json_value_get_object(root_value);
-  char *serialized_string = NULL;
-  //
-  // ToDo: Read Time Server Setting from EEPROM
-  //
-  json_object_set_string(root_object, "timeserver", "MyTimeServer");
-  serialized_string = json_serialize_to_string_pretty(root_value);
-  puts(serialized_string);
-
-  int json_length = strlen(serialized_string);
-  int err = kNoErr;
-    
-  err = httpd_send_all_header(req, HTTP_RES_200, json_length, HTTP_CONTENT_JSON_STR);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http headers.") );
-
-  err = httpd_send_body(req->sock, (const unsigned char*)serialized_string, json_length);
-  require_noerr_action( err, exit, app_httpd_log("ERROR: Unable to send http body.") );
-
-exit:
-  if (serialized_string)
-  {
-    json_free_serialized_string(serialized_string);
-    json_value_free(root_value);
-  }
-  return err;
-}
-
-static int RestTimeServerPostHandler(httpd_request_t *req)
-{
-  Serial.println(__FUNCTION__);
-  OSStatus err = kNoErr;
-  int buf_size = 1000;
-  char *buf;
-
-  buf = (char *)malloc(buf_size);
-  err = httpd_get_data(req, buf, buf_size);
-  app_httpd_log("httpd_get_data return value: %d", err);
-  require_noerr( err, Save_Out );
-  
-  if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) != NULL)
-  {
-    //
-    // ToDo : Save time server to EEPROM
-    //
-    JSON_Value *root_value = NULL;
-    root_value = json_parse_string(buf);
-    JSON_Object *root_object;
-
-    if (json_value_get_type(root_value) == JSONObject)
-    {
-      root_object = json_value_get_object(root_value);
-      const char *strTimeServer = json_object_get_string(root_object, "timeserver");
-
-      Serial.println(strTimeServer);
-
-      if(root_value)
-      {
-        json_value_free(root_value);
-      }
-    }
-  }
-
-Save_Out:
-
-  err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR);
-
-exit:
-  return err;  
-}
-
-static int RestShutdownPost(httpd_request_t *req)
-{
-  Serial.println(__FUNCTION__);
-  OSStatus err = kNoErr;
-  int buf_size = 1000;
-  char *buf;
-
-  buf = (char *)malloc(buf_size);
-  err = httpd_get_data(req, buf, buf_size);
-  app_httpd_log("httpd_get_data return value: %d", err);
-  require_noerr( err, Save_Out );
-  
-  if (strstr(req->content_type, HTTP_CONTENT_JSON_STR) != NULL)
-  {
-    JSON_Value *root_value = NULL;
-    root_value = json_parse_string(buf);
-    JSON_Object *root_object;
-
-    if (json_value_get_type(root_value) == JSONObject)
-    {
-      root_object = json_value_get_object(root_value);
-      double iDelay = json_object_get_number(root_object, "shutdowndelayinms");
-
-      if(root_value)
-      {
-        json_value_free(root_value);
-      }
-
-      delay(iDelay);
-      mico_system_reboot();
-    }
-  }
-
-Save_Out:
-
-  err = httpd_send_all_header(req, HTTP_RES_200, 0, HTTP_CONTENT_JSON_STR);
-
-exit:
-  return err;  
+	return kNoErr;
 }
 
 static struct httpd_wsgi_call g_app_handlers[] =
@@ -1572,11 +1261,10 @@ static struct httpd_wsgi_call g_app_handlers[] =
 	{ "/firmware"              , HTTPD_HDR_DEFORT, 0, HtmlFirmwareUpdateGetHandler, NULL                          , NULL, NULL },
 	{ "/firmware2"             , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlFirmwareUpdate2PostHandler, NULL, NULL },
 	{ "/shutdown"              , HTTPD_HDR_DEFORT, 0, HtmlShutdownGetHandler      , NULL                          , NULL, NULL },
-	//{ "/api"           , HTTPD_HDR_DEFORT, 0, RestConfigGetHandler        , RestConfigPostHandler         , NULL, NULL },
-	//{ "/api/iothub"    , HTTPD_HDR_DEFORT, 0, RestIoTHubGetHandler        , RestIoTHubPostHandler         , NULL, NULL },
-	//{ "/api/wifi"      , HTTPD_HDR_DEFORT, 0, RestWiFiGetHandler          , RestWiFiPostHandler           , NULL, NULL },
-	//{ "/api/timeserver", HTTPD_HDR_DEFORT, 0, RestTimeServerGetHandler    , RestTimeServerPostHandler     , NULL, NULL },
-	//{ "/api/shutdown"  , HTTPD_HDR_DEFORT, 0, NULL                        , RestShutdownPost              , NULL, NULL },
+	{ "/api/wifi"              , HTTPD_HDR_DEFORT, 0, NULL                        , RestWiFiPostHandler           , NULL, NULL },
+	{ "/api/iotcentral"        , HTTPD_HDR_DEFORT, 0, NULL                        , RestIoTCentralPostHandler     , NULL, NULL },
+	{ "/api/iothub"            , HTTPD_HDR_DEFORT, 0, NULL                        , RestIoTHubPostHandler         , NULL, NULL },
+	{ "/api/shutdown"          , HTTPD_HDR_DEFORT, 0, NULL                        , RestShutdownPostHandler       , NULL, NULL },
 };
 
 static int g_app_handlers_no = sizeof(g_app_handlers) / sizeof(g_app_handlers[0]);
