@@ -69,6 +69,7 @@ static const char* HTML_INDEX = \
 				"<div class=\"row\"><p style=\"width: 100%%; text-align: center;\"><a href=\"/iotcentral\" target=\"_self\">Azure IoT Central</a></p></div>" \
 				"<div class=\"row\"><p style=\"width: 100%%; text-align: center;\"><a href=\"/iothub\" target=\"_self\">Azure IoT Hub</a></p></div>" \
 				"<div class=\"row\"><p style=\"width: 100%%; text-align: center;\"><a href=\"/message\" target=\"_self\">Device to Cloud (D2C) Message</a></p></div>" \
+				"<div class=\"row\"><p style=\"width: 100%%; text-align: center;\"><a href=\"/apmode\" target=\"_self\">Access Point Mode</a></p></div>" \
 				"<div class=\"row\"><p style=\"width: 100%%; text-align: center;\"><a href=\"/firmware\" target=\"_self\">Firmware Update</a></p></div>" \
 				"<div class=\"row\">" \
 					"<button class=\"col-md-2 offset-md-9\" type=\"button\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
@@ -363,9 +364,21 @@ static const char* HTML_MESSAGE = \
 						"</div>" \
 					"</div>" \
 					"<div class=\"row\">" \
+						"<label class=\"col-12\" for=\"CustomMessageJson\">Custom message (JSON format)</label>" \
+						"<div class=\"col-12\">" \
+							"<input name=\"CustomMessageJson\" id=\"CustomMessageJson\" value=\"%s\" type=\"text\">" \
+						"</div>" \
+					"</div>" \
+					"<div class=\"row\">" \
 						"<label class=\"col-12\" for=\"ProductId\">Product Id</label>" \
 						"<div class=\"col-12\">" \
 							"<input name=\"ProductId\" id=\"ProductId\" value=\"%s\" type=\"text\">" \
+						"</div>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<label class=\"col-12\" for=\"CustomMessagePropName\">Custom message property name (Device twins)</label>" \
+						"<div class=\"col-12\">" \
+							"<input name=\"CustomMessagePropName\" id=\"CustomMessagePropName\" value=\"%s\" type=\"text\">" \
 						"</div>" \
 					"</div>" \
 					"<div class=\"row\">" \
@@ -396,6 +409,69 @@ static const char* HTML_MESSAGE2_SUCCESS = \
 			"<div class=\"container\">" \
 				"<div class=\"row\">" \
 					"<h2 style=\"width: 100%%; text-align: center;\">Message saved.</h2>" \
+				"</div>" \
+				"<div class=\"row\">" \
+					"<button class=\"col-md-2 offset-md-7\" type=\"button\" onclick=\"location.href='/'\">Home</button>" \
+					"<button class=\"col-md-2\" type=\"button\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
+				"</div>" \
+			"</div>" \
+		"</body>" \
+	"</html>";
+
+static const char* HTML_APMODE = \
+	"<!DOCTYPE html>" \
+	"<html lang=\"en\">" \
+		"<head>" \
+			"<meta charset=\"UTF-8\">" \
+			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" \
+			"<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" \
+			"<title>ReButton</title>" \
+			"<link rel=\"stylesheet\" href=\"/bootstrap-grid.min.css\" crossorigin=\"anonymous\">" \
+			"<link rel=\"stylesheet\" href=\"/rebutton.css\" crossorigin=\"anonymous\">" \
+		"</head>" \
+		"<body>" \
+			"<header>" \
+				"<h1>ReButton - Access Point Mode</h1>" \
+			"</header>" \
+			"<div class=\"container\">" \
+				"<form action=\"apmode2\" method=\"post\" enctype=\"multipart/form-data\">" \
+					"<div class=\"row\">" \
+						"<h2>Access Point Mode Settings</h2>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<label class=\"col-md-2\" for=\"APmodeSSID\">AP SSID</label>" \
+						"<div class=\"col-md-10\">" \
+							"<input name=\"APmodeSSID\" id=\"APmodeSSID\" value=\"%s\" type=\"text\">" \
+						"</div>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<button class=\"col-md-2 offset-md-1\" type=\"submit\">Save</button>" \
+						"<button class=\"col-md-2 offset-md-3\" type=\"button\" onclick=\"location.href='/'\">Home</button>" \
+						"<button class=\"col-md-2\" type=\"button\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
+					"</div>" \
+				"</form>" \
+			"</div>" \
+		"</body>" \
+	"</html>";
+
+static const char* HTML_APMODE2_SUCCESS = \
+	"<!DOCTYPE html>" \
+	"<html lang=\"en\">" \
+		"<head>" \
+			"<meta charset=\"UTF-8\">" \
+			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" \
+			"<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" \
+			"<title>ReButton</title>" \
+			"<link rel=\"stylesheet\" href=\"/bootstrap-grid.min.css\" crossorigin=\"anonymous\">" \
+			"<link rel=\"stylesheet\" href=\"/rebutton.css\" crossorigin=\"anonymous\">" \
+		"</head>" \
+		"<body>" \
+			"<header>" \
+				"<h1>ReButton - Access Point Mode</h1> " \
+			"</header>" \
+			"<div class=\"container\">" \
+				"<div class=\"row\">" \
+					"<h2 style=\"width: 100%%; text-align: center;\">Access Point Mode saved.</h2>" \
 				"</div>" \
 				"<div class=\"row\">" \
 					"<button class=\"col-md-2 offset-md-7\" type=\"button\" onclick=\"location.href='/'\">Home</button>" \
@@ -523,6 +599,35 @@ static int write_eeprom(char* string, int idxZone)
 {
 	Serial.printf("write_eeprom(\"%s\",%d)\n", string, idxZone);
 	return 0;
+}
+
+static String FormValueEncode(const char* text)
+{
+	String html;
+
+	while (*text != '\0')
+	{
+		switch (*text)
+		{
+		case '"':
+			html += "&quot;";
+			break;
+		case '&':
+			html += "&amp;";
+			break;
+		case '<':
+			html += "&lt;";
+			break;
+		case '>':
+			html += "&gt;";
+			break;
+		default:
+			html += *text;
+		}
+		text++;
+	}
+
+	return html;
 }
 
 static OSStatus HttpdSend(httpd_request_t* req, const char* content)
@@ -759,7 +864,26 @@ static int HtmlMessageGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_MESSAGE) + strlen(Config.Message1) + strlen(Config.Message2) + strlen(Config.Message3) + strlen(Config.Message10) + strlen(Config.Message11) + strlen(Config.ProductId), HTML_MESSAGE, Config.Message1, Config.Message2, Config.Message3, Config.Message10, Config.Message11, Config.ProductId);
+	String html = stringformat(
+		strlen(HTML_MESSAGE) +
+		strlen(Config.Message1) + 
+		strlen(Config.Message2) + 
+		strlen(Config.Message3) + 
+		strlen(Config.Message10) + 
+		strlen(Config.Message11) + 
+		strlen(Config.CustomMessageJson) + 
+		strlen(Config.ProductId) + 
+		strlen(Config.CustomMessagePropertyName),
+		HTML_MESSAGE,
+		FormValueEncode(Config.Message1).c_str(),
+		FormValueEncode(Config.Message2).c_str(),
+		FormValueEncode(Config.Message3).c_str(),
+		FormValueEncode(Config.Message10).c_str(),
+		FormValueEncode(Config.Message11).c_str(),
+		FormValueEncode(Config.CustomMessageJson).c_str(), 
+		FormValueEncode(Config.ProductId).c_str(),
+			FormValueEncode(Config.CustomMessagePropertyName).c_str()
+	);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -783,24 +907,68 @@ static int HtmlMessage2PostHandler(httpd_request_t *req)
 	char message3[CONFIG_MESSAGE_MAX_LEN + 1];
 	char message10[CONFIG_MESSAGE_MAX_LEN + 1];
 	char message11[CONFIG_MESSAGE_MAX_LEN + 1];
+	char customMessageJson[CONFIG_CUSTOM_MESSAGE_JSON_MAX_LEN + 1];
 	char productId[CONFIG_PRODUCT_ID_MAX_LEN + 1];
+	char customMessagePropertyName[CONFIG_PROPERTY_NAME_MAX_LEN + 1];
 
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message1", message1, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message2", message2, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message3", message3, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message10", message10, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "Message11", message11, CONFIG_MESSAGE_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "CustomMessageJson", customMessageJson, CONFIG_CUSTOM_MESSAGE_JSON_MAX_LEN)) != kNoErr) return err;
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "ProductId", productId, CONFIG_PRODUCT_ID_MAX_LEN)) != kNoErr) return err;
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "CustomMessagePropName", customMessagePropertyName, CONFIG_PROPERTY_NAME_MAX_LEN)) != kNoErr) return err;
 
 	strncpy(Config.Message1, message1, sizeof(Config.Message1));
 	strncpy(Config.Message2, message2, sizeof(Config.Message2));
 	strncpy(Config.Message3, message3, sizeof(Config.Message3));
 	strncpy(Config.Message10, message10, sizeof(Config.Message10));
 	strncpy(Config.Message11, message11, sizeof(Config.Message11));
+	strncpy(Config.CustomMessageJson, customMessageJson, sizeof(Config.CustomMessageJson));
 	strncpy(Config.ProductId, productId, sizeof(Config.ProductId));
+	strncpy(Config.CustomMessagePropertyName, customMessagePropertyName, sizeof(Config.CustomMessagePropertyName));
 	ConfigWrite();
 
 	String html = stringformat(strlen(HTML_MESSAGE2_SUCCESS), HTML_MESSAGE2_SUCCESS);
+	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
+
+	return kNoErr;
+}
+
+static int HtmlAPmodeGetHandler(httpd_request_t* req)
+{
+	AutoShutdownUpdateStartTime();
+
+	OSStatus err;
+
+	String html = stringformat(strlen(HTML_APMODE) + strlen(Config.APmodeSSID), HTML_APMODE, Config.APmodeSSID);
+	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
+
+	return kNoErr;
+}
+
+static int HtmlAPmode2PostHandler(httpd_request_t *req)
+{
+	AutoShutdownUpdateStartTime();
+
+	OSStatus err;
+
+	std::vector<char> buf(1000);
+
+	if ((err = httpd_get_data(req, &buf[0], buf.size())) != kNoErr) return err;
+	if (strstr(req->content_type, "multipart/form-data") == NULL) return kGeneralErr;
+	char* boundary = strstr(req->content_type, "boundary=");
+	boundary += 9;
+
+	char apmodeSSID[CONFIG_APMODE_SSID_MAX_LEN + 1];
+
+	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "APmodeSSID", apmodeSSID, CONFIG_APMODE_SSID_MAX_LEN)) != kNoErr) return err;
+
+	strncpy(Config.APmodeSSID, apmodeSSID, sizeof(Config.APmodeSSID));
+	ConfigWrite();
+
+	String html = stringformat(strlen(HTML_APMODE2_SUCCESS), HTML_APMODE2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -1359,6 +1527,8 @@ static struct httpd_wsgi_call g_app_handlers[] =
 	{ "/iothub2"               , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlIoTHub2PostHandler        , NULL, NULL },
 	{ "/message"               , HTTPD_HDR_DEFORT, 0, HtmlMessageGetHandler       , NULL                          , NULL, NULL },
 	{ "/message2"              , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlMessage2PostHandler       , NULL, NULL },
+	{ "/apmode"                , HTTPD_HDR_DEFORT, 0, HtmlAPmodeGetHandler        , NULL                          , NULL, NULL },
+	{ "/apmode2"               , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlAPmode2PostHandler        , NULL, NULL },
 	{ "/firmware"              , HTTPD_HDR_DEFORT, 0, HtmlFirmwareUpdateGetHandler, NULL                          , NULL, NULL },
 	{ "/firmware2"             , HTTPD_HDR_DEFORT, 0, NULL                        , HtmlFirmwareUpdate2PostHandler, NULL, NULL },
 	{ "/shutdown"              , HTTPD_HDR_DEFORT, 0, HtmlShutdownGetHandler      , NULL                          , NULL, NULL },
