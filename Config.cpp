@@ -57,7 +57,8 @@ void ConfigResetFactorySettings()
 
 	strncpy_w_zero(Config.CustomMessagePropertyName, "customMessageEnable", sizeof(Config.CustomMessagePropertyName));
     Config.CustomMessageEnable = false;
-    strncpy_w_zero(Config.CustomMessageJson, "\"message\":\"Custom message\"", sizeof(Config.CustomMessageJson));
+    strncpy_w_zero(Config.CustomMessageJson, "\"custom1\":\"Custom1 message\","
+		                                     "\"custom2\":\"Custom2 message\"" , sizeof(Config.CustomMessageJson));
 
     strncpy_w_zero(Config.WiFiSSID, "", sizeof(Config.WiFiSSID));
     strncpy_w_zero(Config.WiFiPassword, "", sizeof(Config.WiFiPassword));

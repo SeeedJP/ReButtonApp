@@ -67,7 +67,7 @@ static String MakeMessageJsonString(ACTION_TYPE action)
     payload += String(",\"batteryVoltage\":") + String(ReButton::ReadPowerSupplyVoltage());
 	if (Config.CustomMessageEnable)
 	{
-		payload += stringformat(",\"customMessage\":{%s}", Config.CustomMessageJson);
+		payload += stringformat(",%s", Config.CustomMessageJson);
 	}
     payload += "}";
 
@@ -77,8 +77,7 @@ static String MakeMessageJsonString(ACTION_TYPE action)
 static String MakeReportJsonString()
 {
 	JSON_Value* data = json_value_init_object();
-	if (strlen(Config.CustomMessagePropertyName) >= 1) json_object_dotset_boolean(json_object(data), stringformat("%s.value", Config.CustomMessagePropertyName).c_str(), Config.CustomMessageEnable);
-	//json_object_dotset_number(json_object(data), "batteryVoltage.value", ReButton::ReadPowerSupplyVoltage());
+	if (strlen(Config.CustomMessagePropertyName) >= 1) json_object_set_boolean(json_object(data), Config.CustomMessagePropertyName, Config.CustomMessageEnable);
 	String jsonString = json_serialize_to_string(data);
 	json_value_free(data);
 
