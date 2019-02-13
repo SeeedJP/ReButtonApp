@@ -91,7 +91,7 @@ static const char* HTML_WIFI_A = \
 		"</head>" \
 		"<body>" \
 			"<header>" \
-				"<h1>ReButton - Wi-Fi</h1>" \
+				"<h1>ReButton - Wi-Fi : MAC Address %s</h1>" \
 			"</header>" \
 			"<div class=\"container\">" \
 				"<form action=\"wifi2\" method=\"post\" enctype=\"multipart/form-data\">" \
@@ -730,7 +730,13 @@ static int HtmlWiFiGetHandler(httpd_request_t *req)
 		if (validWifiCount >= sizeof(validWifiIndex) / sizeof(validWifiIndex[0])) break;
 	}
 
-	String html = HTML_WIFI_A;
+	unsigned char macAddress[6] = {0};
+	WiFi.macAddress(macAddress);
+	char strMacAddress[6 * 3 + 1] = {0};
+
+	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
+
+	String html = stringformat(strlen(HTML_WIFI_A) + strlen(strMacAddress), HTML_WIFI_A, strMacAddress);
 	for (int i = 0; i < validWifiCount; i++)
 	{
 		char* ssid = (char*)wifiScanResult[validWifiIndex[i]].get_ssid();
