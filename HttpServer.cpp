@@ -74,6 +74,12 @@ static const char* HTML_INDEX = \
 				"<div class=\"row\">" \
 					"<button class=\"col-md-2 offset-md-9\" type=\"button\" onclick=\"location.href='/shutdown'\">Shutdown</button>" \
 				"</div>" \
+				"<div style=\"background: #e0e0e0;\">" \
+					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">MAC Address</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
+				"</div>" \
 			"</div>" \
 		"</body>" \
 	"</html>";
@@ -91,7 +97,7 @@ static const char* HTML_WIFI_A = \
 		"</head>" \
 		"<body>" \
 			"<header>" \
-				"<h1>ReButton - Wi-Fi : MAC Address %s</h1>" \
+				"<h1>ReButton - Wi-Fi</h1>" \
 			"</header>" \
 			"<div class=\"container\">" \
 				"<form action=\"wifi2\" method=\"post\" enctype=\"multipart/form-data\">" \
@@ -685,7 +691,12 @@ static int HtmlIndexGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_INDEX), HTML_INDEX);
+	unsigned char macAddress[6];
+	WiFi.macAddress(macAddress);
+	char strMacAddress[6 * 3 + 1];
+	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
+
+	String html = stringformat(strlen(HTML_INDEX) + strlen(strMacAddress), HTML_INDEX, strMacAddress);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -730,13 +741,7 @@ static int HtmlWiFiGetHandler(httpd_request_t *req)
 		if (validWifiCount >= sizeof(validWifiIndex) / sizeof(validWifiIndex[0])) break;
 	}
 
-	unsigned char macAddress[6] = {0};
-	WiFi.macAddress(macAddress);
-	char strMacAddress[6 * 3 + 1] = {0};
-
-	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
-
-	String html = stringformat(strlen(HTML_WIFI_A) + strlen(strMacAddress), HTML_WIFI_A, strMacAddress);
+	String html = HTML_WIFI_A;
 	for (int i = 0; i < validWifiCount; i++)
 	{
 		char* ssid = (char*)wifiScanResult[validWifiIndex[i]].get_ssid();
