@@ -76,7 +76,23 @@ static const char* HTML_INDEX = \
 				"</div>" \
 				"<div style=\"background: #e0e0e0;\">" \
 					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">Firmware Ver.</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
+					"<div class=\"row\">" \
 						"<small class=\"col-md-2\">MAC Address</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">Wi-Fi SSID</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">Time Server</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">Product Id</small>" \
 						"<small class=\"col-md-10\">%s</small>" \
 					"</div>" \
 				"</div>" \
@@ -696,7 +712,20 @@ static int HtmlIndexGetHandler(httpd_request_t* req)
 	char strMacAddress[6 * 3 + 1];
 	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
 
-	String html = stringformat(strlen(HTML_INDEX) + strlen(strMacAddress), HTML_INDEX, strMacAddress);
+	String html = stringformat(
+		strlen(HTML_INDEX) +
+		strlen(CONFIG_FIRMWARE_VERSION) +
+		strlen(strMacAddress) +
+		strlen(Config.WiFiSSID) +
+		strlen(Config.TimeServer) +
+		strlen(Config.ProductId),
+		HTML_INDEX,
+		CONFIG_FIRMWARE_VERSION,
+		strMacAddress,
+		Config.WiFiSSID,
+		Config.TimeServer,
+		Config.ProductId
+	);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -893,7 +922,7 @@ static int HtmlMessageGetHandler(httpd_request_t* req)
 		FormValueEncode(Config.Message11).c_str(),
 		FormValueEncode(Config.CustomMessageJson).c_str(), 
 		FormValueEncode(Config.ProductId).c_str(),
-			FormValueEncode(Config.CustomMessagePropertyName).c_str()
+		FormValueEncode(Config.CustomMessagePropertyName).c_str()
 	);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
