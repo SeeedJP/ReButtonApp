@@ -198,6 +198,7 @@ static void az_scopeid_command(int argc, char **argv)
 	}
 
 	strncpy(Config.ScopeId, argv[1], CONFIG_SCOPE_ID_MAX_LEN + 1);
+	strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 
 	ConfigWrite();
 	Serial.printf("INFO: Set scope id successfully.\r\n");
@@ -218,6 +219,7 @@ static void az_deviceid_command(int argc, char **argv)
 	}
 
 	strncpy(Config.DeviceId, argv[1], CONFIG_DEVICE_ID_MAX_LEN + 1);
+	strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 
 	ConfigWrite();
 	Serial.printf("INFO: Set device id successfully.\r\n");
@@ -238,6 +240,7 @@ static void az_saskey_command(int argc, char **argv)
 	}
 
 	strncpy(Config.SasKey, argv[1], CONFIG_SAS_KEY_MAX_LEN + 1);
+	strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 
 	ConfigWrite();
 	Serial.printf("INFO: Set SAS key successfully.\r\n");
@@ -258,6 +261,9 @@ static void az_iothub_command(int argc, char **argv)
     }
 
     strncpy(Config.IoTHubConnectionString, argv[1], CONFIG_IOTHUB_CONNECTION_STRING_MAX_LEN + 1);
+	strncpy_w_zero(Config.ScopeId, "", sizeof(Config.ScopeId));
+	strncpy_w_zero(Config.DeviceId, "", sizeof(Config.DeviceId));
+	strncpy_w_zero(Config.SasKey, "", sizeof(Config.SasKey));
 
     ConfigWrite();
     Serial.printf("INFO: Set Azure Iot hub connection string successfully.\r\n");

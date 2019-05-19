@@ -10,12 +10,6 @@ static const char* SSID_PREFIX = "AZB-";
 
 CONFIG_TYPE Config;
 
-static void strncpy_w_zero(char* dest, const char* src, int destSize)
-{
-    strncpy(dest, src, destSize - 1);
-    dest[destSize - 1] = '\0';
-}
-
 static uint8_t CalcCheckSum(CONFIG_TYPE* config)
 {
     uint8_t backup[2];
@@ -29,6 +23,12 @@ static uint8_t CalcCheckSum(CONFIG_TYPE* config)
     memcpy(config->CheckSum, backup, sizeof(config->CheckSum));
 
     return checksum;
+}
+
+void strncpy_w_zero(char* dest, const char* src, int destSize)
+{
+	strncpy(dest, src, destSize - 1);
+	dest[destSize - 1] = '\0';
 }
 
 void ConfigResetFactorySettings()

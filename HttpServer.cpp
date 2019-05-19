@@ -202,8 +202,7 @@ static const char* HTML_IOTCENTRAL = \
 					"</div>" \
 					"<div class=\"row\">" \
 						"<p>" \
-							"More about Azure IoT Central : <a href=\"https://aka.ms/AzureIoTCentral\">https://aka.ms/AzureIoTCentral</a><br>" \
-							"Please erase IoT Hub Connection String to connect to Azure IoT Central" \
+							"More about Azure IoT Central : <a href=\"https://aka.ms/AzureIoTCentral\">https://aka.ms/AzureIoTCentral</a>" \
 						"</p>" \
 					"</div>" \
 					"<div class=\"row\">" \
@@ -852,6 +851,7 @@ static int HtmlIoTCentral2PostHandler(httpd_request_t *req)
 	strncpy(Config.ScopeId, scopeId, sizeof(Config.ScopeId));
 	strncpy(Config.DeviceId, deviceId, sizeof(Config.DeviceId));
 	strncpy(Config.SasKey, sasKey, sizeof(Config.SasKey));
+	strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 	ConfigWrite();
 
 	String html = stringformat(strlen(HTML_IOTCENTRAL2_SUCCESS), HTML_IOTCENTRAL2_SUCCESS);
@@ -890,6 +890,9 @@ static int HtmlIoTHub2PostHandler(httpd_request_t *req)
 	if ((err = httpd_get_tag_from_multipart_form(&buf[0], boundary, "IoTHubConnectionString", connectionString, CONFIG_IOTHUB_CONNECTION_STRING_MAX_LEN)) != kNoErr) return err;
 
 	strncpy(Config.IoTHubConnectionString, connectionString, sizeof(Config.IoTHubConnectionString));
+	strncpy_w_zero(Config.ScopeId, "", sizeof(Config.ScopeId));
+	strncpy_w_zero(Config.DeviceId, "", sizeof(Config.DeviceId));
+	strncpy_w_zero(Config.SasKey, "", sizeof(Config.SasKey));
 	ConfigWrite();
 
 	String html = stringformat(strlen(HTML_IOTHUB2_SUCCESS), HTML_IOTHUB2_SUCCESS);

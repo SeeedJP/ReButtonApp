@@ -60,6 +60,8 @@ struct CONFIG_TYPE
 
 extern CONFIG_TYPE Config;
 
+void strncpy_w_zero(char* dest, const char* src, int destSize);
+
 void ConfigResetFactorySettings();
 void ConfigRead();
 void ConfigWrite();
