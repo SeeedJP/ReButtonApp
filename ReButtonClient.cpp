@@ -103,7 +103,12 @@ bool ReButtonClient::Connect(DeviceTwinUpdateCallback callback)
 		return false;
 	}
 
-	if (strlen(Config.IoTHubConnectionString) <= 0 && strlen(Config.ScopeId) >= 1 && strlen(Config.DeviceId) >= 1 && strlen(Config.SasKey) >= 1)
+	String iotHubConnectionString;
+	if (strlen(Config.IoTHubConnectionString) >= 1)
+	{
+		iotHubConnectionString = Config.IoTHubConnectionString;
+	}
+	else if (strlen(Config.IoTHubConnectionString) <= 0 && strlen(Config.ScopeId) >= 1 && strlen(Config.DeviceId) >= 1 && strlen(Config.SasKey) >= 1)
 	{
 		Serial.println("Device provisioning...");
 
@@ -118,20 +123,15 @@ bool ReButtonClient::Connect(DeviceTwinUpdateCallback callback)
 			return false;
 		}
 
-		String iotHubConnectionString;
-		iotHubConnectionString += "HostName=";
+		iotHubConnectionString = "HostName=";
 		iotHubConnectionString += DevkitDPSGetIoTHubURI();
 		iotHubConnectionString += ";DeviceId=";
 		iotHubConnectionString += DevkitDPSGetDeviceID();
 		iotHubConnectionString += ";SharedAccessKey=";
 		iotHubConnectionString += Config.SasKey;
-
-		strncpy(Config.IoTHubConnectionString, iotHubConnectionString.c_str(), sizeof(Config.IoTHubConnectionString) - 1);
-		Config.IoTHubConnectionString[sizeof(Config.IoTHubConnectionString) - 1] = '\0';
-		ConfigWrite();
 	}
 
-	_ClientHandle = IoTHubClient_LL_CreateFromConnectionString(Config.IoTHubConnectionString, MQTT_Protocol);
+	_ClientHandle = IoTHubClient_LL_CreateFromConnectionString(iotHubConnectionString.c_str(), MQTT_Protocol);
 	if (_ClientHandle == NULL)
 	{
 		Serial.println("ERROR: iotHubClientHandle is NULL!");
