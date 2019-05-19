@@ -13,7 +13,7 @@ CONFIG_TYPE Config;
 static void strncpy_w_zero(char* dest, const char* src, int destSize)
 {
     strncpy(dest, src, destSize - 1);
-    dest[destSize] = '\0';
+    dest[destSize - 1] = '\0';
 }
 
 static uint8_t CalcCheckSum(CONFIG_TYPE* config)
