@@ -9,6 +9,11 @@
 #include "ReButtonClient.h"
 #include <SystemTime.h>
 
+#include "GroveTempHumiSHT31.h"
+
+static I2C I2c(PB_9, PB_8);
+static GroveTempHumiSHT31 Sensor(&I2c);
+
 static String stringformat(const char* format, ...)
 {
     va_list args;
@@ -65,6 +70,8 @@ static String MakeMessageJsonString(ACTION_TYPE action)
     payload += String("\"actionNum\":\"") + String(ActionToActionNum(action)) + String("\"");
 	payload += String(",\"message\":\"") + ActionToMessage(action) + String("\"");
     payload += String(",\"batteryVoltage\":") + String(ReButton::ReadPowerSupplyVoltage());
+	payload += String(",\"temperature\":") + String(Sensor.Temperature);
+	payload += String(",\"humidity\":") + String(Sensor.Humidity);
 	if (Config.CustomMessageEnable)
 	{
 		payload += stringformat(",%s", Config.CustomMessageJson);
@@ -127,6 +134,9 @@ static void DeviceTwinUpdateCallbackFunc(DEVICE_TWIN_UPDATE_STATE update_state, 
 bool ActionSendMessage(ACTION_TYPE action)
 {
     Serial.println("ActionSendMessage() : Enter");
+
+	Sensor.Init();
+	Sensor.Read();
 
 	////////////////////
 	// Update auto shutdown
