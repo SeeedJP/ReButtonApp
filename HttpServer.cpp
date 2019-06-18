@@ -46,6 +46,7 @@ static const char* CSS_REBUTTON = \
 	".row{margin: 0.5rem;}" \
 	"form{background: #eeeeee; border: 1px solid #c9c9c9; margin: 0.5rem; padding: 1rem;}" \
 	"input{width:100%;}" \
+	"select{width:100%;}" \
 	"button{background: rgba(143, 195, 31, 1); color: #fafafa; border: 0; border-radius: 2px; padding: 0.5rem 0.75rem; margin: 0.5rem; text-decoration: none; transition: background 0.3s; cursor: pointer;}" \
 	"button:hover{background: #004966; opacity: 1;}";
 
@@ -120,7 +121,7 @@ static const char* HTML_WIFI_A = \
 					"<div class=\"row\">" \
 						"<label class=\"col-md-2\" for=\"WiFiSSID\">Wi-Fi SSID</label>" \
 						"<div class=\"col-md-10\">" \
-							"<select class=\"col-md-10\" name=\"WiFiSSID\" id=\"WiFiSSID\">";
+							"<select name=\"WiFiSSID\" id=\"WiFiSSID\">";
 static const char* HTML_WIFI_B = \
 							"</select>" \
 						"</div>" \
@@ -559,6 +560,7 @@ static const char* HTML_FIRMWARE_UPDATE2 = \
 			"<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" \
 			"<title>ReButton</title>" \
 			"<style>%s</style>" \
+			"<style>%s</style>" \
 		"</head>" \
 		"<body>" \
 			"<header>" \
@@ -583,6 +585,7 @@ static const char* HTML_SHUTDOWN = \
 			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" \
 			"<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">" \
 			"<title>ReButton</title>" \
+			"<style>%s</style>" \
 			"<style>%s</style>" \
 		"</head>" \
 		"<body>" \
@@ -1068,8 +1071,9 @@ static int HtmlFirmwareUpdate2PostHandler(httpd_request_t* req)
 	int inPackageSize = strtol(packageSize, &endp, 0);
 	if (*endp != '\0') return kGeneralErr;
 
-	String html = stringformat(strlen(HTML_FIRMWARE_UPDATE2) + strlen(CSS_REBUTTON), HTML_FIRMWARE_UPDATE2, CSS_REBUTTON);
+	String html = stringformat(strlen(HTML_FIRMWARE_UPDATE2) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_FIRMWARE_UPDATE2, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
+	delay(5000);
 
 	DisplayColor(DISPLAY_OFF);
 	do
@@ -1118,7 +1122,7 @@ static int HtmlShutdownGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_SHUTDOWN) + strlen(CSS_REBUTTON), HTML_SHUTDOWN, CSS_REBUTTON);
+	String html = stringformat(strlen(HTML_SHUTDOWN) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_SHUTDOWN, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	AutoShutdownSetTimeout(5000);
