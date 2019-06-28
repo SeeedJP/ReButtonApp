@@ -2,7 +2,7 @@
 #include "Input.h"
 #include <ReButton.h>
 
-static const int InputWaitForClickTime   = 1000;  // [msec.]
+static const int InputWaitForClickTime   = 200;	  // [msec.]
 static const int InputLongPressTime      = 3000;  // [msec.]
 static const int InputSuperLongPressTime = 6000;  // [msec.]
 static const int InputUltraLongPressTime = 10000; // [msec.]

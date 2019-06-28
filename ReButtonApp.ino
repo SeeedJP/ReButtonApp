@@ -118,7 +118,7 @@ static ACTION_TYPE InputToAction(INPUT_TYPE value)
 	switch (value)
 	{
 	case INPUT_NONE:
-		return ACTION_NONE;
+		return ACTION_CONNECTED;
 	case INPUT_SINGLE_CLICK:
 		return ACTION_1;
 	case INPUT_DOUBLE_CLICK:
