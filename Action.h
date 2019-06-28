@@ -9,6 +9,7 @@ enum ACTION_TYPE
 	ACTION_10,
 	ACTION_11,
 	ACTION_AP,
+	ACTION_FACTORY_RESET,
 };
 
 bool ActionTaskBlocking(ACTION_TYPE action);

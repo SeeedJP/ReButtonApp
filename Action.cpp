@@ -2,6 +2,7 @@
 #include "Action.h"
 #include "ActionSendMessage.h"
 #include "ActionAccessPoint.h"
+#include "ActionFactoryReset.h"
 
 bool ActionTaskBlocking(ACTION_TYPE action)
 {
@@ -17,6 +18,8 @@ bool ActionTaskBlocking(ACTION_TYPE action)
 		return ActionSendMessage(action);
 	case ACTION_AP:
 		return ActionAccessPoint();
+	case ACTION_FACTORY_RESET:
+		return ActionFactoryReset();
 	default:
 		return false;
 	}
@@ -40,6 +43,8 @@ const char* ActionGetActionString(ACTION_TYPE value)
 		return "ACTION_11";
 	case ACTION_AP:
 		return "ACTION_AP";
+	case ACTION_FACTORY_RESET:
+		return "ACTION_FACTORY_RESET";
 	default:
 		return "UNKNOWN";
 	}
