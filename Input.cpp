@@ -16,10 +16,19 @@ static Timer ButtonTimer;
 
 void InputBegin()
 {
-	InputConfirm = INPUT_CAPTURING;
-	InputCurrent = INPUT_SINGLE_CLICK;
+	if (!ReButton::IsButtonPressed())
+	{
+		InputConfirm = INPUT_NONE;
+		InputCurrent = INPUT_NONE;
+		ButtonState = false;
+	}
+	else
+	{
+		InputConfirm = INPUT_CAPTURING;
+		InputCurrent = INPUT_SINGLE_CLICK;
+		ButtonState = true;
+	}
 
-	ButtonState = true;
 	ButtonTimer.reset();
 	ButtonTimer.start();
 }
@@ -102,6 +111,8 @@ const char* InputGetInputString(INPUT_TYPE value)
 	{
 	case INPUT_CAPTURING:
 		return "INPUT_CAPTURING";
+	case INPUT_NONE:
+		return "INPUT_NONE";
 	case INPUT_SINGLE_CLICK:
 		return "INPUT_SINGLE_CLICK";
 	case INPUT_DOUBLE_CLICK:

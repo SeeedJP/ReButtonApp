@@ -92,6 +92,8 @@ static DISPLAY_COLOR_TYPE InputToDisplayColor(INPUT_TYPE value)
 {
 	switch (value)
 	{
+	case INPUT_NONE:
+		return DISPLAY_OFF;
 	case INPUT_SINGLE_CLICK:
 		return Config.DisplayColorSingleClick;
 	case INPUT_DOUBLE_CLICK:
@@ -115,6 +117,8 @@ static ACTION_TYPE InputToAction(INPUT_TYPE value)
 {
 	switch (value)
 	{
+	case INPUT_NONE:
+		return ACTION_NONE;
 	case INPUT_SINGLE_CLICK:
 		return ACTION_1;
 	case INPUT_DOUBLE_CLICK:
