@@ -21,7 +21,7 @@
 
 #define HTTPD_HDR_DEFORT (HTTPD_HDR_ADD_SERVER|HTTPD_HDR_ADD_CONN_CLOSE|HTTPD_HDR_ADD_PRAGMA_NO_CACHE)
 
-extern NetworkInterface *network;
+extern NetworkInterface* _defaultSystemNetwork;
 
 static const char* CSS_BOOTSTRAP_GRID = \
 	"/*!\n" \
@@ -741,7 +741,7 @@ static int HtmlWiFiGetHandler(httpd_request_t *req)
 
 	// scan network
 	WiFiAccessPoint wifiScanResult[100];
-	int wifiCount = ((EMW10xxInterface*)network)->scan(wifiScanResult, 100);
+	int wifiCount = ((EMW10xxInterface*)_defaultSystemNetwork)->scan(wifiScanResult, 100);
 
 	int validWifiIndex[100];
 	int validWifiCount = 0;
