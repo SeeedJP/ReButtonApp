@@ -136,7 +136,7 @@ bool ActionSendMessage(ACTION_TYPE action)
 	////////////////////
 	// Connect Wi-Fi
 
-	SetNTPHost(Config.TimeServer);
+	SetTimeServer(Config.TimeServer);
 
 	Serial.println("ActionSendMessage() : Wi-Fi - Connecting....");
 	if (strlen(Config.WiFiSSID) <= 0 && strlen(Config.WiFiPassword) <= 0) return false;
