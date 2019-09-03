@@ -5,7 +5,7 @@
 #include <ReButton.h>
 #include <AZ3166WiFi.h>
 
-const char* CONFIG_FIRMWARE_VERSION = "1.4";
+const char* CONFIG_FIRMWARE_VERSION = "1.5";
 static const char* SSID_PREFIX = "AZB-";
 
 CONFIG_TYPE Config;
