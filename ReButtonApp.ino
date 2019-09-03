@@ -30,7 +30,7 @@ void setup()
 	ConfigPrint();
 	Serial.println("-----");
 
-	if (!ReButton::IsButtonPressed() && ReButton::IsJumperShort())
+	if (ReButton::IsButtonPressed() && ReButton::IsJumperShort())
 	{
 		Serial.println("Force factory reset.");
 		ConfigResetFactorySettings();
