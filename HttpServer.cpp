@@ -213,17 +213,17 @@ static const char* HTML_IOTCENTRAL = \
 						"</div>" \
 					"</div>" \
 					"<div class=\"row\">" \
-						"<label class=\"col-md-2\" for=\"DeviceId\">Device ID</label>" \
-						"<div class=\"col-md-10\">" \
-							"<input name=\"DeviceId\" id=\"DeviceId\" value=\"%s\" type=\"text\">" \
-						"</div>" \
-					"</div>" \
-					"<div class=\"row\">" \
-						"<label class=\"col-md-2\" for=\"SasKey\">SAS Key</label>" \
+						"<label class=\"col-md-2\" for=\"SasKey\">Group SAS Key</label>" \
 						"<div class=\"col-md-10\">" \
 							"<input name=\"SasKey\" id=\"SasKey\" value=\"%s\" type=\"text\">" \
 						"</div>" \
 						"<small class=\"col-md-10 offset-md-2\">Please enter either Primary or Secondary key</small>" \
+					"</div>" \
+					"<div class=\"row\">" \
+						"<label class=\"col-md-2\" for=\"DeviceId\">Device ID</label>" \
+						"<div class=\"col-md-10\">" \
+							"<input name=\"DeviceId\" id=\"DeviceId\" value=\"%s\" type=\"text\">" \
+						"</div>" \
 					"</div>" \
 					"<div class=\"row\">" \
 						"<button class=\"col-md-2 offset-md-1\" type=\"submit\">Save</button>" \

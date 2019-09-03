@@ -1,0 +1,17 @@
+{
+  "@id": "urn:seeedkk:Interface:Battery:1",
+  "@type": "Interface",
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json",
+  "contents": [
+    {
+      "@type": "Telemetry",
+      "name": "batteryVoltage",
+      "schema": "double",
+      "displayName": {
+        "en": "Battery voltage",
+        "ja": "バッテリー電圧"
+      },
+      "displayUnit": "V"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "@id": "urn:seeedkk:Interface:PushButton:1",
+  "@type": "Interface",
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json",
+  "contents": [
+    {
+      "@type": [
+        "Telemetry",
+        "SemanticType/State"
+      ],
+      "name": "actionNum",
+      "schema": {
+        "@id": "urn:seeedkk:Interface:PushButton:actionNumType:1",
+        "@type": "Enum",
+        "valueSchema": "integer",
+        "enumValues": [
+          {
+            "name": "SingleClick",
+            "enumValue": 1,
+            "displayName": {
+              "en": "Single click",
+              "ja": "シングルクリック"
+            }
+          },
+          {
+            "name": "DoubleClick",
+            "enumValue": 2,
+            "displayName": {
+              "en": "Double click",
+              "ja": "ダブルクリック"
+            }
+          },
+          {
+            "name": "TripleClick",
+            "enumValue": 3,
+            "displayName": {
+              "en": "Triple click",
+              "ja": "トリプルクリック"
+            }
+          },
+          {
+            "name": "LongPress",
+            "enumValue": 10,
+            "displayName": {
+              "en": "Long press",
+              "ja": "ロングクリック"
+            }
+          },
+          {
+            "name": "SuperLongPress",
+            "enumValue": 11,
+            "displayName": {
+              "en": "Super long press",
+              "ja": "スーパーロングクリック"
+            }
+          }
+        ]
+      },
+      "displayName": {
+        "en": "Action number",
+        "ja": "アクション番号"
+      }
+    },
+    {
+      "@type": [
+        "Telemetry",
+        "SemanticType/Event"
+      ],
+      "name": "message",
+      "schema": "string",
+      "displayName": {
+        "en": "Message",
+        "ja": "メッセージ"
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Action.h"
 #include "ActionSendMessage.h"
+#include "src/action/ActionSendMessagePnP.h"
 #include "ActionAccessPoint.h"
 
 bool ActionTaskBlocking(ACTION_TYPE action)
@@ -14,7 +15,7 @@ bool ActionTaskBlocking(ACTION_TYPE action)
 	case ACTION_3:
 	case ACTION_10:
 	case ACTION_11:
-		return ActionSendMessage(action);
+		return ActionSendMessagePnP(action);
 	case ACTION_AP:
 		return ActionAccessPoint();
 	default:

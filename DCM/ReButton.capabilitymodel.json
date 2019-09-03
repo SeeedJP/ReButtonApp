@@ -1,0 +1,20 @@
+{
+  "@id": "urn:seeedkk:ReButton:2",
+  "@type": "CapabilityModel",
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json",
+  "implements": [
+    {
+      "name": "DeviceInfo",
+      "schema": "urn:azureiot:DeviceManagement:DeviceInformation:1"
+    },
+    {
+      "name": "Battery",
+      "schema": "urn:seeedkk:Interface:Battery:1"
+    },
+    {
+      "name": "PushButton",
+      "schema": "urn:seeedkk:Interface:PushButton:1"
+    }
+  ],
+  "displayName": "ReButton"
+}
