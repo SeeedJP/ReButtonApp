@@ -1,36 +1,36 @@
 {
   "@id": "urn:seeedkk:Interface:TempHumidSensor:1",
   "@type": "Interface",
-  "displayName": "Seeed ReButton TempHumidSensor",
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json",
   "contents": [
     {
-      "@id": "urn:seeedkk:Interface:TempHumidSensor:temperature:1",
       "@type": [
         "Telemetry",
         "SemanticType/Temperature"
       ],
-      "displayName": {
-        "en": "Temperature"
-      },
       "name": "temperature",
       "schema": "double",
+      "@id": "urn:seeedkk:Interface:TempHumidSensor:temperature:1",
+      "displayName": {
+        "en": "Temperature",
+        "ja": "温度"
+      },
       "unit": "Units/Temperature/fahrenheit"
     },
     {
-      "@id": "urn:seeedkk:Interface:TempHumidSensor:humidity:1",
       "@type": [
         "Telemetry",
         "SemanticType/Humidity"
       ],
-      "displayName": {
-        "en": "Humidity"
-      },
       "name": "humidity",
       "schema": "double",
+      "@id": "urn:seeedkk:Interface:TempHumidSensor:humidity:1",
+      "displayName": {
+        "en": "Humidity",
+        "ja": "湿度"
+      },
       "unit": "Units/Humidity/percent"
     }
   ],
-  "@context": [
-    "http://azureiot.com/v1/contexts/IoTModel.json"
-  ]
+  "displayName": "Seeed TempHumidSensor"
 }

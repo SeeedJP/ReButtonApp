@@ -20,5 +20,5 @@
       "schema": "urn:seeedkk:Interface:TempHumidSensor:1"
     }
   ],
-  "displayName": "ReButton TempHumid Sensor"
+  "displayName": "ReButton - TempHumid Sensor"
 }
