@@ -29,7 +29,7 @@ static const int PROVISIONING_TRY_INTERVAL = 10000;
 
 static ACTION_TYPE Action;
 
-BME280 bme280;
+static BME280 bme280;
 
 bool ActionSendMessagePnP(ACTION_TYPE action)
 {

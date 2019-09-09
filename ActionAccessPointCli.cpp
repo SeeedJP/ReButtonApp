@@ -140,7 +140,7 @@ static void wifi_pwd_Command(int argc, char **argv)
     char* pwd = NULL;
     if (argc == 1)
     {
-        pwd[0] = '0';
+		pwd = "";
     }
     else
     {
@@ -294,7 +294,7 @@ static void apmode_pwd_Command(int argc, char **argv)
 	char* pwd = NULL;
 	if (argc == 1)
 	{
-		pwd[0] = '0';
+		pwd = "";
 	}
 	else
 	{
