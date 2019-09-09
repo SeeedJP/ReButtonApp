@@ -124,7 +124,6 @@ bool ActionSendMessagePnP(ACTION_TYPE action)
 	// Connect IoT Hub
 
 	Serial.println("ActionSendMessagePnP() : Connect IoT Hub");
-	ReportProperty_IncompleteCount = 8;
 	if (pnp_device_initialize(iotHubConnectionString.c_str(), certificates) != 0)
 	{
 		Serial.println("ActionSendMessagePnP() : Connect IoT Hub failed");

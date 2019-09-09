@@ -50,7 +50,6 @@ void ReportProperty_Succeeded_Callback(const char* interfaceName, const char* pr
     // If needed, put your business logic here to handle the result callback reporting property on success.
 
     LogInfo("DigitalTwin successfully report writable property for %s::%s", interfaceName, propertyName);
-	ReportProperty_IncompleteCount--;
 }
 
 void ReportProperty_Error_Callback(const char* interfaceName, const char* propertyName)
