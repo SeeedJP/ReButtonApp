@@ -15,7 +15,7 @@
         "en": "Temperature",
         "ja": "温度"
       },
-      "unit": "Units/Temperature/fahrenheit"
+      "unit": "Units/Temperature/celsius"
     },
     {
       "@type": [
