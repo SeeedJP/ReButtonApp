@@ -37,6 +37,39 @@ static void DeviceInfoInterface_PropertyCallback(DIGITALTWIN_CLIENT_RESULT digit
         ReportProperty_Error_Callback("DeviceInfo", (const char*)userContextCallback);
         LogError("DEVICEINFO_INTERFACE: Updating property=<%s> failed, error=<%s>", (const char*)userContextCallback, MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, digitalTwinReportedStatus));
     }
+
+    if (strcmp((const char*)userContextCallback, "manufacturer") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_manufacture; 
+    } 
+    else if (strcmp((const char*)userContextCallback, "model") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~Rebutton_Twin_model; 
+    }
+    else if (strcmp((const char*)userContextCallback, "swVersion") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_swVersion; 
+    }
+    else if (strcmp((const char*)userContextCallback, "osName") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_osName; 
+    }
+    else if (strcmp((const char*)userContextCallback, "processorArchitecture") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_processorArchitecture; 
+    }
+    else if (strcmp((const char*)userContextCallback, "processorManufacturer") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_processorManufacturer; 
+    }
+    else if (strcmp((const char*)userContextCallback, "totalStorage") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_totalStorage; 
+    }
+    else if (strcmp((const char*)userContextCallback, "totalMemory") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Twin_totalMemory; 
+    }
 }
 
 // DeviceInfoInterface_ReportProperty_Internal is a helper function to report a DeviceInfo's properties.

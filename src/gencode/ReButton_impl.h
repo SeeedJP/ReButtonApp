@@ -40,6 +40,10 @@ PUSHBUTTON_ACTIONNUM PushButton_Telemetry_ReadActionNum();
 
 char* PushButton_Telemetry_ReadMessage();
 
+double TempHumidSensor_Telemetry_ReadTemperature();
+
+double TempHumidSensor_Telemetry_ReadHumidity();
+
 // Callbacks to handle the confirmation result of sending telemetry
 void SendTelemetry_Succeeded_Callback(const char* interfaceName, const char* telemetryName);
 void SendTelemetry_Error_Callback(const char* interfaceName, const char* telemetryName);
@@ -70,8 +74,39 @@ long DeviceInfo_Property_GetTotalMemory();
 
 // Custom
 
-extern volatile int SendTelemetry_IncompleteCount;
-extern volatile int ReportProperty_IncompleteCount;
+extern volatile int ReButton_Digital_Twin_Work_Flag;
+
+
+
+#define ReButton_Twin_manufacture             (1<<0)
+#define Rebutton_Twin_model                   (1<<1)
+#define ReButton_Twin_swVersion               (1<<2)
+#define ReButton_Twin_osName                  (1<<3)
+#define ReButton_Twin_processorArchitecture   (1<<4)
+#define ReButton_Twin_processorManufacturer   (1<<5)
+#define ReButton_Twin_totalStorage            (1<<6)
+#define ReButton_Twin_totalMemory             (1<<7)
+
+#define ReButton_Telemetry_ActionNum          (1<<16)
+#define ReButton_Telemetry_Message            (1<<17)
+#define ReButton_Telemetry_batteryVoltage     (1<<18)
+#define ReButton_Telemetry_temperature        (1<<19)
+#define ReButton_Telemetry_humidity           (1<<20)
+
+#define  ReButton_Twin_Flags ReButton_Twin_manufacture \
+                           | Rebutton_Twin_model \
+                           | ReButton_Twin_swVersion \
+                           | ReButton_Twin_osName \
+                           | ReButton_Twin_processorArchitecture \
+                           | ReButton_Twin_processorManufacturer \
+                           | ReButton_Twin_totalStorage \
+                           | ReButton_Twin_totalMemory
+
+#define ReButton_Telemetry_Flags ReButton_Telemetry_ActionNum \
+                               | ReButton_Telemetry_Message \
+                               | ReButton_Telemetry_batteryVoltage \
+                               | ReButton_Telemetry_temperature \
+                               | ReButton_Telemetry_humidity
 
 #ifdef __cplusplus
 }

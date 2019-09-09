@@ -11,8 +11,7 @@
 #include "../helper/SasToken.h"
 #include "../gencode/ReButton_impl.h"
 #include <ReButton.h>
-
-#define DEVICE_CAPABILITY_MODEL_URI "urn:seeedkk:ReButton:2"
+#include "./Grove_BME280/Seeed_BME280.h"
 
 static const char* CUSTOM_PROVISIONING_DATA =
 	"{"
@@ -30,10 +29,17 @@ static const int PROVISIONING_TRY_INTERVAL = 10000;
 
 static ACTION_TYPE Action;
 
+BME280 bme280;
+
 bool ActionSendMessagePnP(ACTION_TYPE action)
 {
     Serial.println("ActionSendMessagePnP() : Enter");
 	Action = action;
+
+    ReButton_Digital_Twin_Work_Flag = ReButton_Telemetry_Flags | ReButton_Twin_Flags; 
+
+    Serial.printf("ReButton_Digital_Twin_Work_Flag %08x\r\n", ReButton_Digital_Twin_Work_Flag);
+
 
 	////////////////////
 	// Update auto shutdown
@@ -72,6 +78,10 @@ bool ActionSendMessagePnP(ACTION_TYPE action)
 		// Generate SAS token
 
 		Serial.println("ActionSendMessagePnP() : Generate SAS token");
+		Serial.printf("Scopy ID %s\r\n", Config.ScopeId);
+		Serial.printf("Sas Key  %s\r\n", Config.SasKey);
+		Serial.printf("Dev ID   %s\r\n", Config.DeviceId);
+
 		char* deviceSasKeyPtr;
 		if (GenerateDeviceSasToken(Config.SasKey, Config.DeviceId, &deviceSasKeyPtr))
 		{
@@ -120,22 +130,22 @@ bool ActionSendMessagePnP(ACTION_TYPE action)
 		Serial.println("ActionSendMessagePnP() : Connect IoT Hub failed");
 		return false;
 	}
-	while (ReportProperty_IncompleteCount > 0)
-	{
-		DigitalTwinClientHelper_Check();
-	}
-
-	////////////////////
-	// Send telemetry
 
 	Serial.println("ActionSendMessagePnP() : Send telemetry");
-	SendTelemetry_IncompleteCount = 3;
 	BatteryInterface_Telemetry_SendAll();
 	PushButtonInterface_Telemetry_SendAll();
-	while (SendTelemetry_IncompleteCount > 0)
+
+	if (bme280.init())
+	{
+		TempHumidSensorInterface_Telemetry_SendAll();
+	}
+
+	while (ReButton_Digital_Twin_Work_Flag != 0)
 	{
 		DigitalTwinClientHelper_Check();
 	}
+
+    Serial.printf("ReButton_Digital_Twin_Work_Flag %08x\r\n", ReButton_Digital_Twin_Work_Flag);
 
 	////////////////////
 	// Disconnect IoT Hub
@@ -189,4 +199,18 @@ char* PushButton_Telemetry_ReadMessage()
 	default:
 		return "UNKNOWN";
 	}
+}
+
+double TempHumidSensor_Telemetry_ReadTemperature()
+{
+	float temperature = bme280.getTemperature();
+	Serial.printf("Temperature %f\r\n", temperature);
+    return temperature;
+}
+
+double TempHumidSensor_Telemetry_ReadHumidity()
+{
+	float humidity = bme280.getHumidity();
+	Serial.printf("Humidity %f\r\n", humidity);
+    return humidity;
 }

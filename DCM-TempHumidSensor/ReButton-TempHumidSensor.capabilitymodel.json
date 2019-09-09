@@ -1,5 +1,5 @@
 {
-  "@id": "urn:seeedkk:ReButton:2",
+  "@id": "urn:seeedkk:ReButtonTempHumidSensor:1",
   "@type": "CapabilityModel",
   "@context": "http://azureiot.com/v1/contexts/IoTModel.json",
   "implements": [
@@ -14,7 +14,11 @@
     {
       "name": "PushButton",
       "schema": "urn:seeedkk:Interface:PushButton:1"
+    },
+    {
+      "name": "TempHumidSensor",
+      "schema": "urn:seeedkk:Interface:TempHumidSensor:1"
     }
   ],
-  "displayName": "ReButton"
+  "displayName": "ReButton TempHumid Sensor"
 }

@@ -15,35 +15,27 @@
 #include "utilities/deviceinfo_interface.h"
 #include "utilities/battery_interface.h"
 #include "utilities/pushbutton_interface.h"
+#include "utilities/temphumidsensor_interface.h"
 
 #define Payload_Buffer_Size 256
 
-// This code moved to ActionSendMessagePnP.cpp.
-//
-//double Battery_Telemetry_ReadBatteryVoltage()
-//{
-//	// TODO: provide implementation here
-//	return 3.0;
-//}
-//
-//PUSHBUTTON_ACTIONNUM PushButton_Telemetry_ReadActionNum()
-//{
-//	// TODO: provide implementation here
-//	return PUSHBUTTON_ACTIONNUM_SingleClick;
-//}
-//
-//char* PushButton_Telemetry_ReadMessage()
-//{
-//	// TODO: provide implementation here
-//	return "abc";
-//}
+// double TempHumidSensor_Telemetry_ReadTemperature()
+// {
+//     // TODO: provide implementation here
+//     return 0.0;
+// }
+
+// double TempHumidSensor_Telemetry_ReadHumidity()
+// {
+//     // TODO: provide implementation here
+//     return 0.0;
+// }
 
 void SendTelemetry_Succeeded_Callback(const char* interfaceName, const char* telemetryName)
 {
     // If needed, put your business logic here to handle the confirmation of the delivery for device telemetry on success.
 
     LogInfo("DigitalTwin successfully delivered telemetry message for %s::%s", interfaceName, telemetryName);
-	SendTelemetry_IncompleteCount--;
 }
 
 void SendTelemetry_Error_Callback(const char* interfaceName, const char* telemetryName)
@@ -80,7 +72,7 @@ char* DeviceInfo_Property_GetModel()
 
 char* DeviceInfo_Property_GetSwVersion()
 {
-    return "2.0";
+    return "2.0-TempHumid";
 }
 
 char* DeviceInfo_Property_GetOsName()
@@ -108,5 +100,6 @@ long DeviceInfo_Property_GetTotalMemory()
     return 256 * 1024;
 }
 
-volatile int SendTelemetry_IncompleteCount;
-volatile int ReportProperty_IncompleteCount;
+volatile int ReButton_Digital_Twin_Work_Flag;
+
+

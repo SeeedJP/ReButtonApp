@@ -27,6 +27,10 @@ bool PushButton_SerializeActionNumTelemetry(char * payloadBuffer, int size);
 
 bool PushButton_SerializeMessageTelemetry(char * payloadBuffer, int size);
 
+bool TempHumidSensor_SerializeTemperatureTelemetry(char * payloadBuffer, int size);
+
+bool TempHumidSensor_SerializeHumidityTelemetry(char * payloadBuffer, int size);
+
 bool DeviceInfo_SerializeManufacturerProperty(char * payloadBuffer, int size);
 
 bool DeviceInfo_SerializeModelProperty(char * payloadBuffer, int size);

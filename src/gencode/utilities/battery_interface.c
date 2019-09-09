@@ -35,6 +35,7 @@ static void BatteryInterface_TelemetryCallback(DIGITALTWIN_CLIENT_RESULT digital
         SendTelemetry_Error_Callback("Battery", (const char*)userContextCallback);
         LogError("BATTERY_INTERFACE: DigitalTwin failed to deliver telemetry message for <%s>, error=<%s> ", (const char*)userContextCallback, MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, digitalTwinTelemetryStatus));
     }
+    ReButton_Digital_Twin_Work_Flag &= ~ReButton_Telemetry_batteryVoltage; 
 }
 
 // SendTelemetry is a helper function which is periodically invoked by the caller to send telemetry

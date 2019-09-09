@@ -116,6 +116,58 @@ bool PushButton_SerializeMessageTelemetry(char * payloadBuffer, int size)
     return true;
 }
 
+bool TempHumidSensor_SerializeTemperatureTelemetry(char * payloadBuffer, int size)
+{
+    if (payloadBuffer == NULL)
+    {
+        return false;
+    }
+
+    memset(payloadBuffer, 0, size);
+
+    double temperature = TempHumidSensor_Telemetry_ReadTemperature();
+
+    int neededSize = snprintf(NULL, 0, "%f", temperature);
+
+    if (neededSize > size - 1)
+    {
+        LogError("Failed to build temperature payload string");
+        return false;
+    }
+    else
+    {
+        snprintf(payloadBuffer, size, "%f", temperature);
+    }
+
+    return true;
+}
+
+bool TempHumidSensor_SerializeHumidityTelemetry(char * payloadBuffer, int size)
+{
+    if (payloadBuffer == NULL)
+    {
+        return false;
+    }
+
+    memset(payloadBuffer, 0, size);
+
+    double humidity = TempHumidSensor_Telemetry_ReadHumidity();
+
+    int neededSize = snprintf(NULL, 0, "%f", humidity);
+
+    if (neededSize > size - 1)
+    {
+        LogError("Failed to build humidity payload string");
+        return false;
+    }
+    else
+    {
+        snprintf(payloadBuffer, size, "%f", humidity);
+    }
+
+    return true;
+}
+
 //
 // Serialize read-only property
 //

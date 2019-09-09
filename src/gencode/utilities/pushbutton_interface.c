@@ -35,6 +35,15 @@ static void PushButtonInterface_TelemetryCallback(DIGITALTWIN_CLIENT_RESULT digi
         SendTelemetry_Error_Callback("PushButton", (const char*)userContextCallback);
         LogError("PUSHBUTTON_INTERFACE: DigitalTwin failed to deliver telemetry message for <%s>, error=<%s> ", (const char*)userContextCallback, MU_ENUM_TO_STRING(DIGITALTWIN_CLIENT_RESULT, digitalTwinTelemetryStatus));
     }
+
+    if (strcmp((const char*)userContextCallback, "actionNum") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Telemetry_ActionNum; 
+    } 
+    else if (strcmp((const char*)userContextCallback, "message") == 0)
+    {
+        ReButton_Digital_Twin_Work_Flag &= ~ReButton_Telemetry_Message; 
+    }
 }
 
 // SendTelemetry is a helper function which is periodically invoked by the caller to send telemetry

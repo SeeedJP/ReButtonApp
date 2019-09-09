@@ -7,7 +7,7 @@
 #include "pnp_device.h"
 
 // Number of DigitalTwin Interfaces that this DigitalTwin Device supports.
-#define DIGITALTWIN_INTERFACE_NUM 3
+#define DIGITALTWIN_INTERFACE_NUM 4
 
 #define DEVICEINFO_INDEX 0
 
@@ -15,9 +15,9 @@
 
 #define PUSHBUTTON_INDEX 2
 
-#define DEFAULT_SEND_TELEMETRY_INTERVAL_MS 10000
+#define TEMPHUMIDSENSOR_INDEX 3
 
-#define DEVICE_CAPABILITY_MODEL_URI "urn:seeedkk:ReButton:2"
+#define DEFAULT_SEND_TELEMETRY_INTERVAL_MS 10000
 
 static DIGITALTWIN_INTERFACE_CLIENT_HANDLE interfaceClientHandles[DIGITALTWIN_INTERFACE_NUM];
 static TICK_COUNTER_HANDLE tickcounter = NULL;
@@ -63,6 +63,12 @@ int pnp_device_initialize(const char* connectionString, const char* trustedCert)
         return -1;
     }
 
+    if ((interfaceClientHandles[TEMPHUMIDSENSOR_INDEX] = TempHumidSensorInterface_Create(digitalTwinDeviceClientHandle)) == NULL)
+    {
+        LogError("TempHumidSensorInterface_Create failed");
+        return -1;
+    }
+
     // Register the interface(s) we've created with Azure IoT.  This call will block until interfaces
     // are successfully registered, we get a failure from server, or we timeout.
     if (DigitalTwinClientHelper_RegisterInterfacesAndWait(digitalTwinDeviceClientHandle, DEVICE_CAPABILITY_MODEL_URI, interfaceClientHandles, DIGITALTWIN_INTERFACE_NUM) != DIGITALTWIN_CLIENT_OK)
@@ -81,28 +87,6 @@ int pnp_device_initialize(const char* connectionString, const char* trustedCert)
     return 0;
 }
 
-void pnp_device_run()
-{
-    tickcounter_ms_t nowTick;
-    tickcounter_get_current_ms(tickcounter, &nowTick);
-
-    if (nowTick - lastTickSend >= DEFAULT_SEND_TELEMETRY_INTERVAL_MS)
-    {
-        LogInfo("Send telemetry data to IoT Hub");
-
-        BatteryInterface_Telemetry_SendAll();
-
-        PushButtonInterface_Telemetry_SendAll();
-
-        tickcounter_get_current_ms(tickcounter, &lastTickSend);
-    }
-    else
-    {
-        // Just check data from IoT Hub
-        DigitalTwinClientHelper_Check();
-    }
-}
-
 void pnp_device_close()
 {
     if (interfaceClientHandles[DEVICEINFO_INDEX] != NULL)
@@ -118,6 +102,11 @@ void pnp_device_close()
     if (interfaceClientHandles[PUSHBUTTON_INDEX] != NULL)
     {
         PushButtonInterface_Close(interfaceClientHandles[PUSHBUTTON_INDEX]);
+    }
+
+    if (interfaceClientHandles[TEMPHUMIDSENSOR_INDEX] != NULL)
+    {
+        TempHumidSensorInterface_Close(interfaceClientHandles[TEMPHUMIDSENSOR_INDEX]);
     }
 
     DigitalTwinClientHelper_DeInitialize();

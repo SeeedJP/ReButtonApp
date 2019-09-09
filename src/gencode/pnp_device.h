@@ -19,6 +19,8 @@
 
 #include "utilities/pushbutton_interface.h"
 
+#include "utilities/temphumidsensor_interface.h"
+
 #include "ReButton_impl.h"
 
 #ifdef __cplusplus
@@ -28,9 +30,11 @@ extern "C"
 
 int pnp_device_initialize(const char* connectionString, const char* trustedCert);
 
-void pnp_device_run();
-
 void pnp_device_close();
+
+
+//#define DEVICE_CAPABILITY_MODEL_URI "urn:seeedkk:ReButton:2"
+#define DEVICE_CAPABILITY_MODEL_URI "urn:seeedkk:ReButtonTempHumidSensor:1"
 
 #ifdef __cplusplus
 }

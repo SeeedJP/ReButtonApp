@@ -5,7 +5,7 @@
 #include <ReButton.h>
 #include <AZ3166WiFi.h>
 
-const char* CONFIG_FIRMWARE_VERSION = "2.0";
+const char* CONFIG_FIRMWARE_VERSION = "2.0-TempHumidSensor";
 static const char* SSID_PREFIX = "AZB-";
 
 CONFIG_TYPE Config;
