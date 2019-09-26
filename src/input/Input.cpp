@@ -6,7 +6,6 @@ static const int InputWaitForClickTime   = 200;	  // [msec.]
 static const int InputLongPressTime      = 3000;  // [msec.]
 static const int InputSuperLongPressTime = 6000;  // [msec.]
 static const int InputUltraLongPressTime = 10000; // [msec.]
-static const int InputFactoryResetTime   = 20000; // [msec.]
 
 static INPUT_TYPE InputConfirm;
 static INPUT_TYPE InputCurrent;
@@ -77,9 +76,6 @@ void InputTask()
 		case INPUT_SUPER_LONG_PRESS:
 			if (ButtonTimer.read_ms() >= InputUltraLongPressTime) InputCurrent = INPUT_ULTRA_LONG_PRESS;
 			break;
-		case INPUT_ULTRA_LONG_PRESS:
-			if (ButtonTimer.read_ms() >= InputFactoryResetTime) InputCurrent = INPUT_FACTORY_RESET;
-			break;
 		}
 	}
 
@@ -125,8 +121,6 @@ const char* InputGetInputString(INPUT_TYPE value)
 		return "INPUT_SUPER_LONG_PRESS";
 	case INPUT_ULTRA_LONG_PRESS:
 		return "INPUT_ULTRA_LONG_PRESS";
-	case INPUT_FACTORY_RESET:
-		return "INPUT_FACTORY_RESET";
 	default:
 		return "UNKNOWN";
 	}

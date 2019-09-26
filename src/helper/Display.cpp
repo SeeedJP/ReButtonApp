@@ -2,10 +2,9 @@
 #include "Display.h"
 #include <ReButton.h>
 
-const DISPLAY_COLOR_TYPE DISPLAY_OFF           = { 0  , 0  , 0 };	// OFF
-const DISPLAY_COLOR_TYPE DISPLAY_OK            = { 0  , 255, 0 };	// GREEN
-const DISPLAY_COLOR_TYPE DISPLAY_ERROR         = { 255, 0  , 0 };	// RED
-const DISPLAY_COLOR_TYPE DISPLAY_FACTORY_RESET = { 255, 0  , 0 };	// RED
+const DISPLAY_COLOR_TYPE DISPLAY_OFF   = { 0  , 0  , 0 };	// OFF
+const DISPLAY_COLOR_TYPE DISPLAY_OK    = { 0  , 255, 0 };	// GREEN
+const DISPLAY_COLOR_TYPE DISPLAY_ERROR = { 255, 0  , 0 };	// RED
 
 enum DISPLAY_STATE_TYPE
 {

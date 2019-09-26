@@ -30,6 +30,14 @@ void setup()
 	ConfigPrint();
 	Serial.println("-----");
 
+	if (ReButton::IsButtonPressed() && ReButton::IsJumperShort())
+	{
+		Serial.println("Force factory reset.");
+		ConfigResetFactorySettings();
+		ConfigWrite();
+		return;
+	}
+
 	////////////////////
 	// INPUT
 
@@ -106,8 +114,6 @@ static DISPLAY_COLOR_TYPE InputToDisplayColor(INPUT_TYPE value)
 		return Config.DisplayColorSuperLongPress;
 	case INPUT_ULTRA_LONG_PRESS:
 		return Config.DisplayColorUltraLongPress;
-	case INPUT_FACTORY_RESET:
-		return DISPLAY_FACTORY_RESET;
 	default:
 		return DISPLAY_ERROR;
 	}
@@ -131,8 +137,6 @@ static ACTION_TYPE InputToAction(INPUT_TYPE value)
 		return ACTION_11;
 	case INPUT_ULTRA_LONG_PRESS:
 		return ACTION_AP;
-	case INPUT_FACTORY_RESET:
-		return ACTION_FACTORY_RESET;
 	default:
 		return ACTION_NONE;
 	}

@@ -3,7 +3,6 @@
 #include "ActionSendMessage.h"
 #include "ActionConnectedSendMessage.h"
 #include "ActionAccessPoint.h"
-#include "ActionFactoryReset.h"
 
 bool ActionTaskBlocking(ACTION_TYPE action)
 {
@@ -19,8 +18,6 @@ bool ActionTaskBlocking(ACTION_TYPE action)
 		return ActionConnectedSendMessage();
 	case ACTION_AP:
 		return ActionAccessPoint();
-	case ACTION_FACTORY_RESET:
-		return ActionFactoryReset();
 	default:
 		return false;
 	}
@@ -44,8 +41,6 @@ const char* ActionGetActionString(ACTION_TYPE value)
 		return "ACTION_CONNECTED";
 	case ACTION_AP:
 		return "ACTION_AP";
-	case ACTION_FACTORY_RESET:
-		return "ACTION_FACTORY_RESET";
 	default:
 		return "UNKNOWN";
 	}
