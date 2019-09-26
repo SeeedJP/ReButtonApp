@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "../helper/Config.h"
 #include "ActionConnectedSendMessage.h"
 
 #include <emw10xx-driver/EMW10xxInterface.h>
@@ -10,8 +10,8 @@
 #include <AzureDeviceClient.h>	// https://github.com/matsujirushi/AzureDeviceClient
 
 #include <ReButton.h>
-#include "AutoShutdown.h"
-#include "Input.h"
+#include "../helper/AutoShutdown.h"
+#include "../input/Input.h"
 
 #define KEEP_ALIVE        (60)
 #define LOG_TRACE         (false)

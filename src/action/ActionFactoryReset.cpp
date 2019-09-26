@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "../helper/Config.h"
 #include "ActionFactoryReset.h"
 
 bool ActionFactoryReset()

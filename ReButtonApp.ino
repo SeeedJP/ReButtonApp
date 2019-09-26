@@ -1,11 +1,11 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "src/helper/Config.h"
 
 #include <ReButton.h>
-#include "AutoShutdown.h"
-#include "Display.h"
-#include "Input.h"
-#include "Action.h"
+#include "src/helper/AutoShutdown.h"
+#include "src/helper/Display.h"
+#include "src/input/Input.h"
+#include "src/action/Action.h"
 
 #define LOOP_WAIT_TIME	(10)	// [msec.]
 #define POWER_OFF_TIME	(1000)	// [msec.]

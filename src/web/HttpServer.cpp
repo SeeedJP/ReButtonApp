@@ -1,9 +1,9 @@
 #include <vector>
 #include <Arduino.h>
-#include "Config.h"
+#include "../helper/Config.h"
 #include "HttpServer.h"
 
-#include "AutoShutdown.h"
+#include "../helper/AutoShutdown.h"
 #include <EEPROMInterface.h>
 #include <httpd.h>
 #include <mico.h>
@@ -13,7 +13,7 @@
 #include <OTAFirmwareUpdate.h>
 #include <AZ3166WiFi.h>
 #include <ReButton.h>
-#include "Display.h"
+#include "../helper/Display.h"
 
 #define POWER_OFF_TIME	(1000)	// [msec.]
 

@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "../helper/Config.h"
 #include "ActionAccessPointCli.h"
 
-#include "AutoShutdown.h"
-#include "SystemWiFi.h"
+#include "../helper/AutoShutdown.h"
+#include <SystemWiFi.h>
 
 struct console_command 
 {

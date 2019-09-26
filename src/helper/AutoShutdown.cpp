@@ -2,7 +2,7 @@
 #include "Config.h"
 #include "AutoShutdown.h"
 
-#include "Thread.h"
+#include <Thread.h>
 #include <ReButton.h>
 
 static Thread AutoShutdownThread(osPriorityHigh);

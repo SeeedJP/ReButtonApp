@@ -1,12 +1,12 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "../helper/Config.h"
 #include "ActionSendMessage.h"
 
-#include "AutoShutdown.h"
+#include "../helper/AutoShutdown.h"
 #include <ReButton.h>
 #include <AZ3166WiFi.h>
 #include <parson.h>
-#include "ReButtonClient.h"
+#include "../azureiot/ReButtonClient.h"
 #include <SystemTime.h>
 
 static String stringformat(const char* format, ...)
