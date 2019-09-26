@@ -97,12 +97,6 @@ bool ReButtonClient::Connect(DeviceTwinUpdateCallback callback)
 {
 	_DeviceTwinUpdateCallbackFunc = callback;
 
-	if (platform_init() != 0)
-	{
-		Serial.println("Failed to initialize the platform.");
-		return false;
-	}
-
 	String iotHubConnectionString;
 	if (strlen(Config.IoTHubConnectionString) >= 1)
 	{

@@ -2,12 +2,18 @@
 #include "../helper/Config.h"
 #include "ActionSendMessage.h"
 
-#include "../helper/AutoShutdown.h"
-#include <ReButton.h>
-#include <AZ3166WiFi.h>
+#include <emw10xx-driver/EMW10xxInterface.h>
+#include <system/SystemWiFi.h>
+#include <system/SystemTime.h>
+#include <azure_c_shared_utility/platform.h>
+#include <IPAddress.h>
 #include <parson.h>
+
+#include <ReButton.h>
+#include "../helper/AutoShutdown.h"
 #include "../azureiot/ReButtonClient.h"
-#include <SystemTime.h>
+
+#define WIFI              ((EMW10xxInterface*)WiFiInterface())
 
 static String stringformat(const char* format, ...)
 {
@@ -136,19 +142,18 @@ bool ActionSendMessage(ACTION_TYPE action)
 	////////////////////
 	// Connect Wi-Fi
 
-	SetNTPHost(Config.TimeServer);
-
 	Serial.println("ActionSendMessage() : Wi-Fi - Connecting....");
 	if (strlen(Config.WiFiSSID) <= 0 && strlen(Config.WiFiPassword) <= 0) return false;
-    if (WiFi.begin(Config.WiFiSSID, Config.WiFiPassword) != WL_CONNECTED) return false;
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-		wait_ms(100);
-    }
+	SetNTPHost(Config.TimeServer);
+	InitSystemWiFi();
+	WIFI->set_interface(Station);
+	if (WIFI->connect(Config.WiFiSSID, Config.WiFiPassword, NSAPI_SECURITY_WPA_WPA2, 0) != 0) return false;
+	platform_init();
 
-    IPAddress ip = WiFi.localIP();
-    Serial.printf("ActionSendMessage() : IP address is %s.\n", ip.get_address());
+	IPAddress ip;
+	ip.fromString(WIFI->get_ip_address());
+	Serial.printf("ActionSendMessage() : IP address is %s.\n", ip.get_address());
 
   	////////////////////
   	// Initialize IoTHub client
