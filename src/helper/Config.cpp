@@ -60,6 +60,8 @@ void ConfigResetFactorySettings()
     strncpy_w_zero(Config.CustomMessageJson, "\"custom1\":\"Custom1 message\","
 		                                     "\"custom2\":\"Custom2 message\"" , sizeof(Config.CustomMessageJson));
 
+	Config.ActionCount = 0;
+
     strncpy_w_zero(Config.WiFiSSID, "", sizeof(Config.WiFiSSID));
     strncpy_w_zero(Config.WiFiPassword, "", sizeof(Config.WiFiPassword));
 	strncpy_w_zero(Config.TimeServer, "", sizeof(Config.TimeServer));

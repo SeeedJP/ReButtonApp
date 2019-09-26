@@ -70,7 +70,26 @@ static String MakeMessageJsonString(ACTION_TYPE action)
     String payload = "{";
     payload += String("\"actionNum\":\"") + String(ActionToActionNum(action)) + String("\"");
 	payload += String(",\"message\":\"") + ActionToMessage(action) + String("\"");
-    payload += String(",\"batteryVoltage\":") + String(ReButton::ReadPowerSupplyVoltage());
+	switch (action)
+	{
+	case ACTION_1:
+		payload += String(",\"singleClick\":\"") + ActionToMessage(action) + String("\"");
+		break;
+	case ACTION_2:
+		payload += String(",\"doubleClick\":\"") + ActionToMessage(action) + String("\"");
+		break;
+	case ACTION_3:
+		payload += String(",\"tripleClick\":\"") + ActionToMessage(action) + String("\"");
+		break;
+	case ACTION_10:
+		payload += String(",\"longPress\":\"") + ActionToMessage(action) + String("\"");
+		break;
+	case ACTION_11:
+		payload += String(",\"superLongPress\":\"") + ActionToMessage(action) + String("\"");
+		break;
+	}
+	payload += String(",\"batteryVoltage\":") + String(ReButton::ReadPowerSupplyVoltage());
+	payload += String(",\"actionCount\":") + String(Config.ActionCount);
 	if (Config.CustomMessageEnable)
 	{
 		payload += stringformat(",%s", Config.CustomMessageJson);
@@ -84,6 +103,7 @@ static String MakeReportJsonString()
 {
 	JSON_Value* data = json_value_init_object();
 	if (strlen(Config.CustomMessagePropertyName) >= 1) json_object_set_boolean(json_object(data), Config.CustomMessagePropertyName, Config.CustomMessageEnable);
+	json_object_set_number(json_object(data), "actionCount", Config.ActionCount);
 	String jsonString = json_serialize_to_string(data);
 	json_value_free(data);
 
@@ -114,7 +134,7 @@ static void DeviceTwinUpdateCallbackFunc(DEVICE_TWIN_UPDATE_STATE update_state, 
 	{
 		customMessageEnable = json_object_dotget_boolean(root_object, stringformat("desired.%s.value", Config.CustomMessagePropertyName).c_str());
 	}
-
+	int actionCount = json_object_dotget_number(root_object, "reported.actionCount");
     json_value_free(root_value);
 
     switch (customMessageEnable)
@@ -126,6 +146,8 @@ static void DeviceTwinUpdateCallbackFunc(DEVICE_TWIN_UPDATE_STATE update_state, 
         Config.CustomMessageEnable = false;
         break;
     }
+
+	Config.ActionCount = actionCount;
 
 	DeviceTwinReceived = true;
 }
@@ -187,6 +209,8 @@ bool ActionSendMessage(ACTION_TYPE action)
 
 	////////////////////
 	// Send message
+
+	Config.ActionCount++;
 
     String payload = MakeMessageJsonString(action);
     if (!client.SendMessageAsync(payload.c_str()))
