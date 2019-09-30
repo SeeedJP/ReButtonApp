@@ -12,22 +12,18 @@ static Timer ButtonTimer;
 
 void InputBegin()
 {
-	//// Disable ACTION_CONNECTED state
-	//if (!ReButton::IsButtonPressed())
-	//{
-	//	InputConfirm = INPUT_NONE;
-	//	InputCurrent = INPUT_NONE;
-	//	ButtonState = false;
-	//}
-	//else
-	//{
-	//	InputConfirm = INPUT_CAPTURING;
-	//	InputCurrent = INPUT_SINGLE_CLICK;
-	//	ButtonState = true;
-	//}
-	InputConfirm = INPUT_CAPTURING;
-	InputCurrent = INPUT_SINGLE_CLICK;
-	ButtonState = true;
+	if (!ReButton::IsButtonPressed())
+	{
+		InputConfirm = INPUT_NONE;
+		InputCurrent = INPUT_NONE;
+		ButtonState = false;
+	}
+	else
+	{
+		InputConfirm = INPUT_CAPTURING;
+		InputCurrent = INPUT_SINGLE_CLICK;
+		ButtonState = true;
+	}
 
 	ButtonTimer.reset();
 	ButtonTimer.start();

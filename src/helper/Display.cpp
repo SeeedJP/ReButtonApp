@@ -9,6 +9,8 @@ enum DISPLAY_STATE_TYPE
 	DISPLAY_STATE_LIGHTING,
 	DISPLAY_STATE_ACTION,
 	DISPLAY_STATE_FINISH,
+	DISPLAY_STATE_ACTION_DISCONNECTED,
+	DISPLAY_STATE_ACTION_CONNECTED,
 };
 
 struct DISPLAY_MESSAGE
@@ -45,6 +47,8 @@ static void DisplayMain()
 				break;
 			case DISPLAY_STATE_ACTION:
 			case DISPLAY_STATE_FINISH:
+			case DISPLAY_STATE_ACTION_DISCONNECTED:
+			case DISPLAY_STATE_ACTION_CONNECTED:
 				lastMessageTimer.reset();
 				lastMessageTimer.start();
 				break;
@@ -81,6 +85,30 @@ static void DisplayMain()
 			if (elapsedTime < 500) ReButton::SetLed(0.0f, 0.0f, 0.0f);
 			else if (elapsedTime < 1500) ReButton::SetLed((float)lastMessage.Color.Red / 255.0f, (float)lastMessage.Color.Green / 255.0f, (float)lastMessage.Color.Blue / 255.0f);
 			break;
+		case DISPLAY_STATE_ACTION_DISCONNECTED:
+			elapsedTime = lastMessageTimer.read_ms();
+			elapsedTime %= 1000;
+			if (elapsedTime < 800)
+			{
+				ReButton::SetLed(0.0f, 0.0f, 0.0f);
+			}
+			else
+			{
+				ReButton::SetLed((float)lastMessage.Color.Red / 255.0f, (float)lastMessage.Color.Green / 255.0f, (float)lastMessage.Color.Blue / 255.0f);
+			}
+			break;
+		case DISPLAY_STATE_ACTION_CONNECTED:
+			elapsedTime = lastMessageTimer.read_ms();
+			elapsedTime %= 5000;
+			if (elapsedTime < 4800)
+			{
+				ReButton::SetLed(0.0f, 0.0f, 0.0f);
+			}
+			else
+			{
+				ReButton::SetLed((float)lastMessage.Color.Red / 255.0f, (float)lastMessage.Color.Green / 255.0f, (float)lastMessage.Color.Blue / 255.0f);
+			}
+			break;
 		}
 	}
 }
@@ -110,6 +138,22 @@ void DisplayStartFinish(DISPLAY_COLOR_TYPE color)
 {
 	DISPLAY_MESSAGE* message = DisplayMailbox.alloc();
 	message->State = DISPLAY_STATE_FINISH;
+	message->Color = color;
+	DisplayMailbox.put(message);
+}
+
+void DisplayStartActionDisconnected(DISPLAY_COLOR_TYPE color)
+{
+	DISPLAY_MESSAGE* message = DisplayMailbox.alloc();
+	message->State = DISPLAY_STATE_ACTION_DISCONNECTED;
+	message->Color = color;
+	DisplayMailbox.put(message);
+}
+
+void DisplayStartActionConnected(DISPLAY_COLOR_TYPE color)
+{
+	DISPLAY_MESSAGE* message = DisplayMailbox.alloc();
+	message->State = DISPLAY_STATE_ACTION_CONNECTED;
 	message->Color = color;
 	DisplayMailbox.put(message);
 }

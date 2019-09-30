@@ -46,7 +46,9 @@ extern const char* GLOBAL_DEVICE_ENDPOINT;
 
 extern const char* SSID_PREFIX;
 
+ACTION_TYPE InputToAction(INPUT_TYPE value);
 const char* InputGetInputString(INPUT_TYPE value);
+DISPLAY_COLOR_TYPE InputToDisplayColor(INPUT_TYPE value);
 
 const char* ActionGetActionString(ACTION_TYPE value);
 int ActionToActionNum(ACTION_TYPE action);

@@ -7,25 +7,31 @@
 #include <system/SystemTime.h>
 #include <azure_c_shared_utility/platform.h>
 #include <IPAddress.h>
-#include <AzureDeviceClient.h>	// https://github.com/matsujirushi/AzureDeviceClient
 
 #include <ReButton.h>
 #include "../input/Input.h"
+#include "../azureiot/ReButtonClient2.h"
 
-#define KEEP_ALIVE        (60)
-#define LOG_TRACE         (false)
+#define KEEP_ALIVE			(60)
+#define LOG_TRACE			(false)
 
-#define WIFI              ((EMW10xxInterface*)WiFiInterface())
-#define POLLING_INTERVAL  (100)
+#define WIFI				((EMW10xxInterface*)WiFiInterface())
+#define POLLING_INTERVAL	(100)
+
+#define LOOP_WAIT_TIME		(10)	// [msec.]
+
+static const DISPLAY_COLOR_TYPE COLOR_DISCONNECTED = { 255, 255, 255 };
+static const DISPLAY_COLOR_TYPE COLOR_CONNECTED    = { 255, 255, 255 };
 
 bool ActionConnectedSendMessage()
 {
     Serial.println("ActionConnectedSendMessage() : Enter");
 
 	////////////////////
-	// Suspend auto shutdown
+	// Set display
 
-	AutoShutdownSuspend();
+	DisplayStartActionDisconnected(COLOR_DISCONNECTED);
+	bool isConnected = false;
 
 	////////////////////
 	// Connect Wi-Fi
@@ -46,11 +52,26 @@ bool ActionConnectedSendMessage()
   	////////////////////
   	// Connect Azure
 
-	AzureDeviceClient client;
+	ReButtonClient2 client;
 	client.SetProductId(Config.ProductId);
 	client.SetKeepAlive(KEEP_ALIVE);
 	client.SetLogTrace(LOG_TRACE);
-	if (!client.ConnectIoTHub(Config.IoTHubConnectionString)) return false;	// TODO Support IoT Central
+	if (strlen(Config.IoTHubConnectionString) >= 1)
+	{
+		if (!client.ConnectIoTHub(Config.IoTHubConnectionString)) return false;
+	}
+	else if (strlen(Config.IoTHubConnectionString) <= 0 && strlen(Config.ScopeId) >= 1 && strlen(Config.DeviceId) >= 1 && strlen(Config.SasKey) >= 1)
+	{
+		if (!client.ConnectIoTHubWithDPS(GLOBAL_DEVICE_ENDPOINT, Config.ScopeId, Config.DeviceId, Config.SasKey)) return false;
+	}
+	else
+	{
+		return false;
+	}
+
+	////////////////////
+	// Make sure we are connected
+
 	Serial.print("Wait for connected");
 	while (!client.IsConnected())
 	{
@@ -60,13 +81,35 @@ bool ActionConnectedSendMessage()
 	}
 	Serial.println();
 
-    ////////////////////
+	////////////////////
+	// Suspend auto shutdown
+
+	AutoShutdownSuspend();
+
+	////////////////////
     // Do work
 
 	Serial.println("Ready.");
 
-	while (client.IsConnected())
+	while (ReButton::IsJumperShort())
 	{
+		if (isConnected)
+		{
+			if (!client.IsConnected())
+			{
+				DisplayStartActionDisconnected(COLOR_DISCONNECTED);
+				isConnected = false;
+			}
+		}
+		else
+		{
+			if (client.IsConnected())
+			{
+				DisplayStartActionConnected(COLOR_CONNECTED);
+				isConnected = true;
+			}
+		}
+
 		if (ReButton::IsButtonPressed())
 		{
 			InputBegin();
@@ -74,25 +117,25 @@ bool ActionConnectedSendMessage()
 			{
 				InputTask();
 				if (!InputIsCapturing()) break;
-				delay(10);
+				DisplayColor(InputToDisplayColor(InputGetCurrentValue()));
+				client.DoWork();
+				delay(LOOP_WAIT_TIME);
 			}
 			INPUT_TYPE input = InputGetConfirmValue();
 			Serial.printf("Button is %s.\n", InputGetInputString(input));
 
-			JSON_Value* telemetryValue = json_value_init_object();
-			JSON_Object* telemetryObject = json_value_get_object(telemetryValue);
+			client.ReportedActionCount++;
+			client.SendPropertyActionCountAsync();
+			client.SendTelemetryAsync(InputToAction(input));
 
-			json_object_set_string(telemetryObject, "message", InputGetInputString(input));
-
-			client.SendTelemetryAsync(telemetryObject);
-
-			json_value_free(telemetryValue);
-
+			DisplayStartActionConnected(isConnected ? COLOR_CONNECTED : COLOR_DISCONNECTED);
 		}
 
 		client.DoWork();
 		delay(POLLING_INTERVAL);
 	}
+
+	client.Disconnect();
 
     Serial.println("ActionConnectedSendMessage() : Complete");
 

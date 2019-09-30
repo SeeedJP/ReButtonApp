@@ -196,8 +196,7 @@ bool ActionSendMessage(ACTION_TYPE action)
 
 	client.Disconnect();
 
-
-    Serial.println("Complete");
+    Serial.println("ActionSendMessage() : Complete");
 
     return true;
 }

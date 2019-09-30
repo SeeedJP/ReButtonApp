@@ -17,6 +17,29 @@ const char* GLOBAL_DEVICE_ENDPOINT = "global.azure-devices-provisioning.net";
 
 const char* SSID_PREFIX = "AZB-";
 
+ACTION_TYPE InputToAction(INPUT_TYPE value)
+{
+	switch (value)
+	{
+	case INPUT_NONE:
+		return ACTION_CONNECTED;
+	case INPUT_SINGLE_CLICK:
+		return ACTION_1;
+	case INPUT_DOUBLE_CLICK:
+		return ACTION_2;
+	case INPUT_TRIPLE_CLICK:
+		return ACTION_3;
+	case INPUT_LONG_PRESS:
+		return ACTION_10;
+	case INPUT_SUPER_LONG_PRESS:
+		return ACTION_11;
+	case INPUT_ULTRA_LONG_PRESS:
+		return ACTION_AP;
+	default:
+		return ACTION_NONE;
+	}
+}
+
 const char* InputGetInputString(INPUT_TYPE value)
 {
 	switch (value)
@@ -39,6 +62,29 @@ const char* InputGetInputString(INPUT_TYPE value)
 		return "INPUT_ULTRA_LONG_PRESS";
 	default:
 		return "UNKNOWN";
+	}
+}
+
+DISPLAY_COLOR_TYPE InputToDisplayColor(INPUT_TYPE value)
+{
+	switch (value)
+	{
+	case INPUT_NONE:
+		return DISPLAY_OFF;
+	case INPUT_SINGLE_CLICK:
+		return Config.DisplayColorSingleClick;
+	case INPUT_DOUBLE_CLICK:
+		return Config.DisplayColorDoubleClick;
+	case INPUT_TRIPLE_CLICK:
+		return Config.DisplayColorTripleClick;
+	case INPUT_LONG_PRESS:
+		return Config.DisplayColorLongPress;
+	case INPUT_SUPER_LONG_PRESS:
+		return Config.DisplayColorSuperLongPress;
+	case INPUT_ULTRA_LONG_PRESS:
+		return Config.DisplayColorUltraLongPress;
+	default:
+		return DISPLAY_ERROR;
 	}
 }
 
