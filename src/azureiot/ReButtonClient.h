@@ -1,7 +1,8 @@
+#pragma once
+
 #include <Arduino.h>
 #include <ReButton.h>
 #include <AzureIotHub.h>
-#include "../helper/Config.h"
 
 typedef void (*DeviceTwinUpdateCallback)(DEVICE_TWIN_UPDATE_STATE update_state, const unsigned char* payLoad, size_t size);
 

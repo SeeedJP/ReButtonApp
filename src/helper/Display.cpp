@@ -1,10 +1,8 @@
 #include <Arduino.h>
+#include "../Common.h"
 #include "Display.h"
-#include <ReButton.h>
 
-const DISPLAY_COLOR_TYPE DISPLAY_OFF   = { 0  , 0  , 0 };	// OFF
-const DISPLAY_COLOR_TYPE DISPLAY_OK    = { 0  , 255, 0 };	// GREEN
-const DISPLAY_COLOR_TYPE DISPLAY_ERROR = { 255, 0  , 0 };	// RED
+#include <ReButton.h>
 
 enum DISPLAY_STATE_TYPE
 {

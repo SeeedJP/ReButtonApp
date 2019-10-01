@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "../helper/Config.h"
+#include "../Common.h"
 #include "ActionSendMessage.h"
 
 #include <emw10xx-driver/EMW10xxInterface.h>
@@ -10,60 +10,9 @@
 #include <parson.h>
 
 #include <ReButton.h>
-#include "../helper/AutoShutdown.h"
 #include "../azureiot/ReButtonClient.h"
 
 #define WIFI              ((EMW10xxInterface*)WiFiInterface())
-
-static String stringformat(const char* format, ...)
-{
-    va_list args;
-    char buf[1024];
-
-    va_start(args, format);
-    vsnprintf(buf, sizeof(buf), format, args);
-    va_end(args);
-
-    return buf;
-}
-
-static int ActionToActionNum(ACTION_TYPE action)
-{
-    switch (action)
-    {
-  	case ACTION_1:
-          return 1;
-  	case ACTION_2:
-          return 2;
-  	case ACTION_3:
-          return 3;
-  	case ACTION_10:
-          return 10;
-  	case ACTION_11:
-          return 11;
-      default:
-          return -1;
-    }
-}
-
-static const char* ActionToMessage(ACTION_TYPE action)
-{
-    switch (action)
-    {
-	case ACTION_1:
-        return Config.Message1;
-	case ACTION_2:
-        return Config.Message2;
-	case ACTION_3:
-        return Config.Message3;
-	case ACTION_10:
-        return Config.Message10;
-	case ACTION_11:
-        return Config.Message11;
-    default:
-        return "UNKNOWN";
-    }
-}
 
 static String MakeMessageJsonString(ACTION_TYPE action)
 {

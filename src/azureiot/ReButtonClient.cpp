@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <ReButton.h>
+#include "../Common.h"
 #include "ReButtonClient.h"
-#include <DevkitDPSClient.h>
 
-static const char* GLOBAL_DEVICE_ENDPOINT = "global.azure-devices-provisioning.net";
+#include <ReButton.h>
+#include <DevkitDPSClient.h>
 
 static void ConnectionStateCallbackFunc(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* context)
 {

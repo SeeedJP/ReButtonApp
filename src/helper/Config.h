@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Display.h"
-
-extern const char* CONFIG_FIRMWARE_VERSION;
+#include "TypeAndFunc.h"
 
 #define CONFIG_AUTO_SHUTDOWN_TIMEOUT			(60000)		// [msec.]
 #define CONFIG_AUTO_SHUTDOWN_TIMEOUT_AP			(600000)	// [msec.]

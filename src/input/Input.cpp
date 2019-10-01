@@ -1,11 +1,8 @@
 #include <Arduino.h>
+#include "../Common.h"
 #include "Input.h"
-#include <ReButton.h>
 
-static const int InputWaitForClickTime   = 200;	  // [msec.]
-static const int InputLongPressTime      = 3000;  // [msec.]
-static const int InputSuperLongPressTime = 6000;  // [msec.]
-static const int InputUltraLongPressTime = 10000; // [msec.]
+#include <ReButton.h>
 
 static INPUT_TYPE InputConfirm;
 static INPUT_TYPE InputCurrent;
@@ -72,19 +69,19 @@ void InputTask()
 		switch (InputCurrent)
 		{
 		case INPUT_SINGLE_CLICK:
-			if (ButtonTimer.read_ms() >= InputLongPressTime) InputCurrent = INPUT_LONG_PRESS;
+			if (ButtonTimer.read_ms() >= INPUT_LONG_PRESS_TIME) InputCurrent = INPUT_LONG_PRESS;
 			break;
 		case INPUT_LONG_PRESS:
-			if (ButtonTimer.read_ms() >= InputSuperLongPressTime) InputCurrent = INPUT_SUPER_LONG_PRESS;
+			if (ButtonTimer.read_ms() >= INPUT_SUPER_LONG_PRESS_TIME) InputCurrent = INPUT_SUPER_LONG_PRESS;
 			break;
 		case INPUT_SUPER_LONG_PRESS:
-			if (ButtonTimer.read_ms() >= InputUltraLongPressTime) InputCurrent = INPUT_ULTRA_LONG_PRESS;
+			if (ButtonTimer.read_ms() >= INPUT_ULTRA_LONG_PRESS_TIME) InputCurrent = INPUT_ULTRA_LONG_PRESS;
 			break;
 		}
 	}
 
 	// Detect confirm
-	if (!ButtonState && ButtonTimer.read_ms() >= InputWaitForClickTime)
+	if (!ButtonState && ButtonTimer.read_ms() >= INPUT_WAIT_FOR_CLICK_TIME)
 	{
 		InputConfirm = InputCurrent;
 	}
@@ -103,29 +100,4 @@ INPUT_TYPE InputGetCurrentValue()
 INPUT_TYPE InputGetConfirmValue()
 {
     return InputConfirm;
-}
-
-const char* InputGetInputString(INPUT_TYPE value)
-{
-	switch (value)
-	{
-	case INPUT_CAPTURING:
-		return "INPUT_CAPTURING";
-	case INPUT_NONE:
-		return "INPUT_NONE";
-	case INPUT_SINGLE_CLICK:
-		return "INPUT_SINGLE_CLICK";
-	case INPUT_DOUBLE_CLICK:
-		return "INPUT_DOUBLE_CLICK";
-	case INPUT_TRIPLE_CLICK:
-		return "INPUT_TRIPLE_CLICK";
-	case INPUT_LONG_PRESS:
-		return "INPUT_LONG_PRESS";
-	case INPUT_SUPER_LONG_PRESS:
-		return "INPUT_SUPER_LONG_PRESS";
-	case INPUT_ULTRA_LONG_PRESS:
-		return "INPUT_ULTRA_LONG_PRESS";
-	default:
-		return "UNKNOWN";
-	}
 }

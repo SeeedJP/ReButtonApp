@@ -1,15 +1,6 @@
 #pragma once
 
-struct DISPLAY_COLOR_TYPE
-{
-	uint8_t Red;
-	uint8_t Green;
-	uint8_t Blue;
-};
-
-extern const DISPLAY_COLOR_TYPE DISPLAY_OFF;
-extern const DISPLAY_COLOR_TYPE DISPLAY_OK;
-extern const DISPLAY_COLOR_TYPE DISPLAY_ERROR;
+#include "TypeAndFunc.h"
 
 void DisplayBegin();
 void DisplayColor(DISPLAY_COLOR_TYPE color);

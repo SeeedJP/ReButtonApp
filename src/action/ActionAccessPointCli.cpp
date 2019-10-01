@@ -1,8 +1,7 @@
 #include <Arduino.h>
-#include "../helper/Config.h"
+#include "../Common.h"
 #include "ActionAccessPointCli.h"
 
-#include "../helper/AutoShutdown.h"
 #include <SystemWiFi.h>
 
 struct console_command 

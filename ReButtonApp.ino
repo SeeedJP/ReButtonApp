@@ -1,9 +1,7 @@
 #include <Arduino.h>
-#include "src/helper/Config.h"
+#include "src/Common.h"
 
 #include <ReButton.h>
-#include "src/helper/AutoShutdown.h"
-#include "src/helper/Display.h"
 #include "src/input/Input.h"
 #include "src/action/Action.h"
 

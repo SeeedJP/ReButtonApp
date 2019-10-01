@@ -1,16 +1,5 @@
 #pragma once
 
-enum ACTION_TYPE
-{
-	ACTION_NONE,
-	ACTION_1,
-	ACTION_2,
-	ACTION_3,
-	ACTION_10,
-	ACTION_11,
-	ACTION_CONNECTED,
-	ACTION_AP,
-};
+#include "../Common.h"
 
 bool ActionTaskBlocking(ACTION_TYPE action);
-const char* ActionGetActionString(ACTION_TYPE value);

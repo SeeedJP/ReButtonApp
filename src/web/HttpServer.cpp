@@ -1,9 +1,8 @@
 #include <vector>
 #include <Arduino.h>
-#include "../helper/Config.h"
+#include "../Common.h"
 #include "HttpServer.h"
 
-#include "../helper/AutoShutdown.h"
 #include <EEPROMInterface.h>
 #include <httpd.h>
 #include <mico.h>
@@ -13,7 +12,6 @@
 #include <OTAFirmwareUpdate.h>
 #include <AZ3166WiFi.h>
 #include <ReButton.h>
-#include "../helper/Display.h"
 
 #define POWER_OFF_TIME	(1000)	// [msec.]
 
@@ -603,28 +601,6 @@ static const char* HTML_SHUTDOWN = \
 static bool is_http_init;
 static bool is_handlers_registered;
 
-static String stringformat(int maxLength, const char* format, ...)
-{
-	va_list args;
-	char* buf = new char[maxLength + 1];
-
-	va_start(args, format);
-	vsnprintf(buf, maxLength + 1, format, args);
-	va_end(args);
-
-	String str(buf);
-
-	delete[] buf;
-
-	return str;
-}
-
-static int write_eeprom(char* string, int idxZone)
-{
-	Serial.printf("write_eeprom(\"%s\",%d)\n", string, idxZone);
-	return 0;
-}
-
 static String FormValueEncode(const char* text)
 {
 	String html;
@@ -714,7 +690,7 @@ static int HtmlIndexGetHandler(httpd_request_t* req)
 	char strMacAddress[6 * 3 + 1];
 	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
 
-	String html = stringformat(
+	String html = stringformat2(
 		strlen(HTML_INDEX) +
 		strlen(CONFIG_FIRMWARE_VERSION) +
 		strlen(strMacAddress) +
@@ -777,9 +753,9 @@ static int HtmlWiFiGetHandler(httpd_request_t *req)
 	{
 		char* ssid = (char*)wifiScanResult[validWifiIndex[i]].get_ssid();
 		int ssidLen = strlen(ssid);
-		html += stringformat(15 + ssidLen + 2 + ssidLen + 9, "<option value=\"%s\">%s</option>", ssid, ssid);
+		html += stringformat2(15 + ssidLen + 2 + ssidLen + 9, "<option value=\"%s\">%s</option>", ssid, ssid);
 	}
-	html += stringformat(strlen(HTML_WIFI_B) + strlen(Config.TimeServer), HTML_WIFI_B, Config.TimeServer);
+	html += stringformat2(strlen(HTML_WIFI_B) + strlen(Config.TimeServer), HTML_WIFI_B, Config.TimeServer);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -812,7 +788,7 @@ static int HtmlWiFi2PostHandler(httpd_request_t *req)
 	strncpy(Config.TimeServer, timeServer, sizeof(Config.TimeServer));
 	ConfigWrite();
 
-	String html = stringformat(strlen(HTML_WIFI2_SUCCESS), HTML_WIFI2_SUCCESS);
+	String html = stringformat2(strlen(HTML_WIFI2_SUCCESS), HTML_WIFI2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -824,7 +800,7 @@ static int HtmlIoTCentralGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_IOTCENTRAL) + strlen(Config.ScopeId) + strlen(Config.DeviceId) + strlen(Config.SasKey), HTML_IOTCENTRAL, Config.ScopeId, Config.DeviceId, Config.SasKey);
+	String html = stringformat2(strlen(HTML_IOTCENTRAL) + strlen(Config.ScopeId) + strlen(Config.DeviceId) + strlen(Config.SasKey), HTML_IOTCENTRAL, Config.ScopeId, Config.DeviceId, Config.SasKey);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -857,7 +833,7 @@ static int HtmlIoTCentral2PostHandler(httpd_request_t *req)
 	strncpy_w_zero(Config.IoTHubConnectionString, "", sizeof(Config.IoTHubConnectionString));
 	ConfigWrite();
 
-	String html = stringformat(strlen(HTML_IOTCENTRAL2_SUCCESS), HTML_IOTCENTRAL2_SUCCESS);
+	String html = stringformat2(strlen(HTML_IOTCENTRAL2_SUCCESS), HTML_IOTCENTRAL2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -869,7 +845,7 @@ static int HtmlIoTHubGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_IOTHUB) + strlen(Config.IoTHubConnectionString), HTML_IOTHUB, Config.IoTHubConnectionString);
+	String html = stringformat2(strlen(HTML_IOTHUB) + strlen(Config.IoTHubConnectionString), HTML_IOTHUB, Config.IoTHubConnectionString);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -898,7 +874,7 @@ static int HtmlIoTHub2PostHandler(httpd_request_t *req)
 	strncpy_w_zero(Config.SasKey, "", sizeof(Config.SasKey));
 	ConfigWrite();
 
-	String html = stringformat(strlen(HTML_IOTHUB2_SUCCESS), HTML_IOTHUB2_SUCCESS);
+	String html = stringformat2(strlen(HTML_IOTHUB2_SUCCESS), HTML_IOTHUB2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -910,7 +886,7 @@ static int HtmlMessageGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(
+	String html = stringformat2(
 		strlen(HTML_MESSAGE) +
 		strlen(Config.Message1) + 
 		strlen(Config.Message2) + 
@@ -976,7 +952,7 @@ static int HtmlMessage2PostHandler(httpd_request_t *req)
 	strncpy(Config.CustomMessagePropertyName, customMessagePropertyName, sizeof(Config.CustomMessagePropertyName));
 	ConfigWrite();
 
-	String html = stringformat(strlen(HTML_MESSAGE2_SUCCESS), HTML_MESSAGE2_SUCCESS);
+	String html = stringformat2(strlen(HTML_MESSAGE2_SUCCESS), HTML_MESSAGE2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -988,7 +964,7 @@ static int HtmlAPmodeGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_APMODE) + strlen(Config.APmodeSSID), HTML_APMODE, Config.APmodeSSID);
+	String html = stringformat2(strlen(HTML_APMODE) + strlen(Config.APmodeSSID), HTML_APMODE, Config.APmodeSSID);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -1014,7 +990,7 @@ static int HtmlAPmode2PostHandler(httpd_request_t *req)
 	strncpy(Config.APmodeSSID, apmodeSSID, sizeof(Config.APmodeSSID));
 	ConfigWrite();
 
-	String html = stringformat(strlen(HTML_APMODE2_SUCCESS), HTML_APMODE2_SUCCESS);
+	String html = stringformat2(strlen(HTML_APMODE2_SUCCESS), HTML_APMODE2_SUCCESS);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -1026,7 +1002,7 @@ static int HtmlFirmwareUpdateGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_FIRMWARE_UPDATE) + strlen(CONFIG_FIRMWARE_VERSION), HTML_FIRMWARE_UPDATE, CONFIG_FIRMWARE_VERSION);
+	String html = stringformat2(strlen(HTML_FIRMWARE_UPDATE) + strlen(CONFIG_FIRMWARE_VERSION), HTML_FIRMWARE_UPDATE, CONFIG_FIRMWARE_VERSION);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	return kNoErr;
@@ -1040,7 +1016,7 @@ static int HtmlFirmwareUpdate2PostHandler(httpd_request_t* req)
 
 	if (!ReButton::IsButtonPressed())
 	{
-		String html = stringformat(strlen(HTML_FIRMWARE_UPDATE) + strlen(CONFIG_FIRMWARE_VERSION), HTML_FIRMWARE_UPDATE, CONFIG_FIRMWARE_VERSION);
+		String html = stringformat2(strlen(HTML_FIRMWARE_UPDATE) + strlen(CONFIG_FIRMWARE_VERSION), HTML_FIRMWARE_UPDATE, CONFIG_FIRMWARE_VERSION);
 		if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 		return kNoErr;
@@ -1071,7 +1047,7 @@ static int HtmlFirmwareUpdate2PostHandler(httpd_request_t* req)
 	int inPackageSize = strtol(packageSize, &endp, 0);
 	if (*endp != '\0') return kGeneralErr;
 
-	String html = stringformat(strlen(HTML_FIRMWARE_UPDATE2) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_FIRMWARE_UPDATE2, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
+	String html = stringformat2(strlen(HTML_FIRMWARE_UPDATE2) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_FIRMWARE_UPDATE2, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 	delay(5000);
 
@@ -1122,7 +1098,7 @@ static int HtmlShutdownGetHandler(httpd_request_t* req)
 
 	OSStatus err;
 
-	String html = stringformat(strlen(HTML_SHUTDOWN) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_SHUTDOWN, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
+	String html = stringformat2(strlen(HTML_SHUTDOWN) + strlen(CSS_BOOTSTRAP_GRID) + strlen(CSS_REBUTTON), HTML_SHUTDOWN, CSS_BOOTSTRAP_GRID, CSS_REBUTTON);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
 	AutoShutdownSetTimeout(5000);

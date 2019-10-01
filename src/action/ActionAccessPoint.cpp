@@ -1,8 +1,7 @@
 #include <Arduino.h>
-#include "../helper/Config.h"
+#include "../Common.h"
 #include "ActionAccessPoint.h"
 
-#include "../helper/AutoShutdown.h"
 #include <AZ3166WiFi.h>
 #include "../web/HttpServer.h"
 #include "ActionAccessPointCli.h"

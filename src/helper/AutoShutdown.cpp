@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Config.h"
+#include "../Common.h"
 #include "AutoShutdown.h"
 
 #include <Thread.h>
