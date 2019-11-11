@@ -37,10 +37,7 @@ struct CONFIG_TYPE
 	char ProductId[CONFIG_PRODUCT_ID_MAX_LEN + 1];
 
 	char CustomMessagePropertyName[CONFIG_PROPERTY_NAME_MAX_LEN + 1];
-	bool CustomMessageEnable;
 	char CustomMessageJson[CONFIG_CUSTOM_MESSAGE_JSON_MAX_LEN + 1];
-
-	int ActionCount;
 
 	char WiFiSSID[CONFIG_WIFI_SSID_MAX_LEN + 1];
 	char WiFiPassword[CONFIG_WIFI_PASSWORD_MAX_LEN + 1];

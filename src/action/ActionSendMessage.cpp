@@ -174,7 +174,7 @@ bool ActionSendMessage(ACTION_TYPE action)
 
 	Serial.println("ActionSendMessage() : Send message.");
 	client.Action = action;
-	client.ReportedActionCount++;
+	client.ActionCount++;
 	client.SendTelemetryActionAsync();
 
 	////////////////////

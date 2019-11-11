@@ -11,7 +11,8 @@ ReButtonClient2::ReButtonClient2()
 {
 	_IsDeviceTwinReceived = false;
 	Action = ACTION_NONE;
-	ReportedActionCount = 0;
+	ActionCount = 0;
+	CustomMessageEnable = false;
 }
 
 bool ReButtonClient2::IsDeviceTwinReceived() const
@@ -72,13 +73,13 @@ void ReButtonClient2::SendTelemetryActionAsync()
 		break;
 	}
 	json_object_set_number(telemetryObject, "batteryVoltage", ReButton::ReadPowerSupplyVoltage());
-	json_object_set_number(telemetryObject, "actionCount", ReportedActionCount);
+	json_object_set_number(telemetryObject, "actionCount", ActionCount);
 
 	AzureDeviceClient::SendTelemetryAsync(telemetryObject);
 
 	json_value_free(telemetryValue);
 
-	if (Config.CustomMessageEnable)
+	if (CustomMessageEnable)
 	{
 		JSON_Value* rootValue = json_parse_string(Config.CustomMessageJson);
 		if (rootValue != NULL)
@@ -96,9 +97,9 @@ void ReButtonClient2::ReceivedProperties(JSON_Object* reportedObject)
 {
 	if (json_object_dothas_value_of_type(reportedObject, REPORTED_PROPERTY_ACTION_COUNT, JSONNumber))
 	{
-		ReportedActionCount = json_object_dotget_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT);
+		ActionCount = json_object_dotget_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT);
 		Serial.print("ReportedActionCount = ");
-		Serial.println(ReportedActionCount);
+		Serial.println(ActionCount);
 	}
 }
 
@@ -110,15 +111,15 @@ void ReButtonClient2::ReceivedSettings(JSON_Object* desiredObject, bool complete
 		switch (customMessageEnable)
 		{
 		case 1:
-			Config.CustomMessageEnable = true;
+			CustomMessageEnable = true;
 			break;
 		case 0:
-			Config.CustomMessageEnable = false;
+			CustomMessageEnable = false;
 			break;
 		}
 
 		Serial.print("CustomMessageEnable = ");
-		Serial.println(Config.CustomMessageEnable ? "true" : "false");
+		Serial.println(CustomMessageEnable ? "true" : "false");
 
 		SendPropertyCustomMessageEnableAsync();
 	}
@@ -129,7 +130,7 @@ void ReButtonClient2::SendPropertyCustomMessageEnableAsync()
 	JSON_Value* reportedValue = json_value_init_object();
 	JSON_Object* reportedObject = json_value_get_object(reportedValue);
 
-	json_object_dotset_boolean(reportedObject, Config.CustomMessagePropertyName, Config.CustomMessageEnable);
+	json_object_dotset_boolean(reportedObject, Config.CustomMessagePropertyName, CustomMessageEnable);
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 
@@ -141,7 +142,7 @@ void ReButtonClient2::SendPropertyActionCountAsync()
 	JSON_Value* reportedValue = json_value_init_object();
 	JSON_Object* reportedObject = json_value_get_object(reportedValue);
 
-	json_object_dotset_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT, ReportedActionCount);
+	json_object_dotset_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT, ActionCount);
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 

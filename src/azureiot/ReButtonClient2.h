@@ -10,7 +10,8 @@ private:
 
 public:
 	ACTION_TYPE Action;
-	int ReportedActionCount;
+	int ActionCount;
+	bool CustomMessageEnable;
 
 public:
 	ReButtonClient2();
