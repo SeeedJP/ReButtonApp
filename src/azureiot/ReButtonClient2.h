@@ -9,6 +9,7 @@ private:
 	bool _IsDeviceTwinReceived;
 
 public:
+	ACTION_TYPE Action;
 	int ReportedActionCount;
 
 public:
@@ -16,12 +17,14 @@ public:
 
 	bool ConnectIoTHubWithDPS(const char* endpoint, const char* scopeId, const char* deviceId, const char* sasKey);
 
+	void SendTelemetryActionAsync();
+
+private:
 	void ReceivedProperties(JSON_Object* reportedObject);
+	void ReceivedSettings(JSON_Object* desiredObject, bool complete);
+
+	void SendPropertyCustomMessageEnableAsync();
 	void SendPropertyActionCountAsync();
-
-	bool ReceivedSettings(JSON_Object* desiredObject);
-
-	void SendTelemetryAsync(ACTION_TYPE action);
 
 protected:
 	virtual void DeviceTwinReceived(JSON_Object* deviceTwinObject);

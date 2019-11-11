@@ -48,8 +48,7 @@ void ConfigResetFactorySettings()
 
 	strncpy_w_zero(Config.CustomMessagePropertyName, "customMessageEnable", sizeof(Config.CustomMessagePropertyName));
     Config.CustomMessageEnable = false;
-    strncpy_w_zero(Config.CustomMessageJson, "\"custom1\":\"Custom1 message\","
-		                                     "\"custom2\":\"Custom2 message\"" , sizeof(Config.CustomMessageJson));
+    strncpy_w_zero(Config.CustomMessageJson, "{\"custom1\":\"Custom1 message\",\"custom2\":\"Custom2 message\"}", sizeof(Config.CustomMessageJson));
 
 	Config.ActionCount = 0;
 

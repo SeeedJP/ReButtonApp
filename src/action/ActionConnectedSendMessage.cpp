@@ -124,9 +124,9 @@ bool ActionConnectedSendMessage()
 			INPUT_TYPE input = InputGetConfirmValue();
 			Serial.printf("Button is %s.\n", InputGetInputString(input));
 
+			client.Action = InputToAction(input);
 			client.ReportedActionCount++;
-			client.SendPropertyActionCountAsync();
-			client.SendTelemetryAsync(InputToAction(input));
+			client.SendTelemetryActionAsync();
 
 			DisplayStartActionConnected(isConnected ? COLOR_CONNECTED : COLOR_DISCONNECTED);
 		}
