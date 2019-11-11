@@ -14,6 +14,11 @@ ReButtonClient2::ReButtonClient2()
 	ReportedActionCount = 0;
 }
 
+bool ReButtonClient2::IsDeviceTwinReceived() const
+{
+	return _IsDeviceTwinReceived;
+}
+
 bool ReButtonClient2::ConnectIoTHubWithDPS(const char* endpoint, const char* scopeId, const char* deviceId, const char* sasKey)
 {
 	Serial.println("Device provisioning...");

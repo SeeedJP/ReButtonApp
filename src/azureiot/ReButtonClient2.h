@@ -17,6 +17,7 @@ public:
 
 	bool ConnectIoTHubWithDPS(const char* endpoint, const char* scopeId, const char* deviceId, const char* sasKey);
 
+	bool IsDeviceTwinReceived() const;
 	void SendTelemetryActionAsync();
 
 private:
