@@ -91,6 +91,7 @@ bool ActionConnectedSendMessage()
 
 	Serial.println("Ready.");
 
+	uint32_t nextTime = millis();
 	while (ReButton::IsJumperShort())
 	{
 		if (isConnected)
@@ -127,8 +128,17 @@ bool ActionConnectedSendMessage()
 			client.Action = InputToAction(input);
 			client.ActionCount++;
 			client.SendTelemetryActionAsync();
+			if (client.TelemetryInterval == 0) client.SendTelemetryEnvironmentAsync();
 
 			DisplayStartActionConnected(isConnected ? COLOR_CONNECTED : COLOR_DISCONNECTED);
+		}
+
+		if (client.TelemetryInterval >= 1 && millis() >= nextTime)
+		{
+			client.SendTelemetryEnvironmentAsync();
+
+			do nextTime += client.TelemetryInterval * 1000;
+			while (millis() > nextTime);
 		}
 
 		client.DoWork();

@@ -5,7 +5,8 @@
 #include <ReButton.h>
 #include <DevkitDPSClient.h>
 
-const char* REPORTED_PROPERTY_ACTION_COUNT = "actionCount";
+const char* PROPERTY_ACTION_COUNT = "actionCount";
+const char* PROPERTY_TELEMETRY_INTERVAL = "telemetryInterval";
 
 ReButtonClient2::ReButtonClient2() : _GroveSHT35(&_Board.I2C), _GroveSHT31(&_Board.I2C)
 {
@@ -13,6 +14,7 @@ ReButtonClient2::ReButtonClient2() : _GroveSHT35(&_Board.I2C), _GroveSHT31(&_Boa
 	Action = ACTION_NONE;
 	ActionCount = 0;
 	CustomMessageEnable = false;
+	TelemetryInterval = 0;
 
 	_Board.I2C.Enable();
 	_GroveSHT35.Init();
@@ -131,10 +133,10 @@ void ReButtonClient2::SendTelemetryEnvironmentAsync()
 
 void ReButtonClient2::ReceivedProperties(JSON_Object* reportedObject)
 {
-	if (json_object_dothas_value_of_type(reportedObject, REPORTED_PROPERTY_ACTION_COUNT, JSONNumber))
+	if (json_object_dothas_value_of_type(reportedObject, PROPERTY_ACTION_COUNT, JSONNumber))
 	{
-		ActionCount = json_object_dotget_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT);
-		Serial.print("ReportedActionCount = ");
+		ActionCount = json_object_dotget_number(reportedObject, PROPERTY_ACTION_COUNT);
+		Serial.print("ActionCount = ");
 		Serial.println(ActionCount);
 	}
 }
@@ -159,6 +161,16 @@ void ReButtonClient2::ReceivedSettings(JSON_Object* desiredObject, bool complete
 
 		SendPropertyCustomMessageEnableAsync();
 	}
+
+	if (json_object_dothas_value_of_type(desiredObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str(), JSONNumber))
+	{
+		TelemetryInterval = json_object_dotget_number(desiredObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str());
+
+		Serial.print("TelemetryInterval = ");
+		Serial.println(TelemetryInterval);
+
+		SendPropertyTelemetryIntervalAsync();
+	}
 }
 
 void ReButtonClient2::SendPropertyCustomMessageEnableAsync()
@@ -178,7 +190,19 @@ void ReButtonClient2::SendPropertyActionCountAsync()
 	JSON_Value* reportedValue = json_value_init_object();
 	JSON_Object* reportedObject = json_value_get_object(reportedValue);
 
-	json_object_dotset_number(reportedObject, REPORTED_PROPERTY_ACTION_COUNT, ActionCount);
+	json_object_dotset_number(reportedObject, PROPERTY_ACTION_COUNT, ActionCount);
+
+	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
+
+	json_value_free(reportedValue);
+}
+
+void ReButtonClient2::SendPropertyTelemetryIntervalAsync()
+{
+	JSON_Value* reportedValue = json_value_init_object();
+	JSON_Object* reportedObject = json_value_get_object(reportedValue);
+
+	json_object_dotset_number(reportedObject, PROPERTY_TELEMETRY_INTERVAL, TelemetryInterval);
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 

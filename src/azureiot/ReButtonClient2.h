@@ -17,6 +17,7 @@ public:
 	ACTION_TYPE Action;
 	int ActionCount;
 	bool CustomMessageEnable;
+	int TelemetryInterval;
 
 public:
 	ReButtonClient2();
@@ -33,6 +34,7 @@ private:
 
 	void SendPropertyCustomMessageEnableAsync();
 	void SendPropertyActionCountAsync();
+	void SendPropertyTelemetryIntervalAsync();
 
 protected:
 	virtual void DeviceTwinReceived(JSON_Object* deviceTwinObject);
