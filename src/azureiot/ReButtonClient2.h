@@ -1,11 +1,16 @@
 #pragma once
 
 #include <AzureDeviceClient.h>	// https://github.com/matsujirushi/AzureDeviceClient
+#include <GroveDriverPack.h>	// https://github.com/SeeedJP/GroveDriverPack
 #include "../Common.h"
 
 class ReButtonClient2 : public AzureDeviceClient
 {
 private:
+	GroveBoard _Board;
+	GroveTempHumiSHT35 _GroveSHT35;
+	GroveTempHumiSHT31 _GroveSHT31;
+
 	bool _IsDeviceTwinReceived;
 
 public:
@@ -20,6 +25,7 @@ public:
 
 	bool IsDeviceTwinReceived() const;
 	void SendTelemetryActionAsync();
+	void SendTelemetryEnvironmentAsync();
 
 private:
 	void ReceivedProperties(JSON_Object* reportedObject);

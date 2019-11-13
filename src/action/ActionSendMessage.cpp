@@ -89,6 +89,7 @@ bool ActionSendMessage(ACTION_TYPE action)
 	client.Action = action;
 	client.ActionCount++;
 	client.SendTelemetryActionAsync();
+	client.SendTelemetryEnvironmentAsync();
 
 	////////////////////
 	// Wait for sent

@@ -7,12 +7,16 @@
 
 const char* REPORTED_PROPERTY_ACTION_COUNT = "actionCount";
 
-ReButtonClient2::ReButtonClient2()
+ReButtonClient2::ReButtonClient2() : _GroveSHT35(&_Board.I2C), _GroveSHT31(&_Board.I2C)
 {
 	_IsDeviceTwinReceived = false;
 	Action = ACTION_NONE;
 	ActionCount = 0;
 	CustomMessageEnable = false;
+
+	_Board.I2C.Enable();
+	_GroveSHT35.Init();
+	_GroveSHT31.Init();
 }
 
 bool ReButtonClient2::IsDeviceTwinReceived() const
@@ -91,6 +95,38 @@ void ReButtonClient2::SendTelemetryActionAsync()
 	}
 
 	SendPropertyActionCountAsync();
+}
+
+void ReButtonClient2::SendTelemetryEnvironmentAsync()
+{
+	if (_GroveSHT35.IsExist())
+	{
+		_GroveSHT35.Read();
+
+		JSON_Value* telemetryValue = json_value_init_object();
+		JSON_Object* telemetryObject = json_value_get_object(telemetryValue);
+
+		json_object_set_number(telemetryObject, "temperature", _GroveSHT35.Temperature);
+		json_object_set_number(telemetryObject, "humidity", _GroveSHT35.Humidity);
+
+		AzureDeviceClient::SendTelemetryAsync(telemetryObject);
+
+		json_value_free(telemetryValue);
+	}
+	else if (_GroveSHT31.IsExist())
+	{
+		_GroveSHT31.Read();
+
+		JSON_Value* telemetryValue = json_value_init_object();
+		JSON_Object* telemetryObject = json_value_get_object(telemetryValue);
+
+		json_object_set_number(telemetryObject, "temperature", _GroveSHT31.Temperature);
+		json_object_set_number(telemetryObject, "humidity", _GroveSHT31.Humidity);
+
+		AzureDeviceClient::SendTelemetryAsync(telemetryObject);
+
+		json_value_free(telemetryValue);
+	}
 }
 
 void ReButtonClient2::ReceivedProperties(JSON_Object* reportedObject)
