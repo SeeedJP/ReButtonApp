@@ -91,7 +91,7 @@ bool ActionConnectedSendMessage()
 
 	Serial.println("Ready.");
 
-	uint32_t nextTime = millis();
+	uint64_t nextTime = SystemTickCounterRead();
 	while (ReButton::IsJumperShort())
 	{
 		if (isConnected)
@@ -133,12 +133,13 @@ bool ActionConnectedSendMessage()
 			DisplayStartActionConnected(isConnected ? COLOR_CONNECTED : COLOR_DISCONNECTED);
 		}
 
-		if (client.TelemetryInterval >= 1 && millis() >= nextTime)
+		if (client.TelemetryInterval >= 1 && SystemTickCounterRead() >= nextTime)
 		{
+			Serial.println("Send environment info.");
 			client.SendTelemetryEnvironmentAsync();
 
 			do nextTime += client.TelemetryInterval * 1000;
-			while (millis() > nextTime);
+			while (SystemTickCounterRead() > nextTime);
 		}
 
 		client.DoWork();
