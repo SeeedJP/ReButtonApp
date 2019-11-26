@@ -10,6 +10,7 @@ private:
 	GroveBoard _Board;
 	GroveTempHumiSHT35 _GroveSHT35;
 	GroveTempHumiSHT31 _GroveSHT31;
+	GroveTempHumiBaroBME280 _GroveBME280;
 
 	bool _IsDeviceTwinReceived;
 
