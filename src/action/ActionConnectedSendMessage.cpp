@@ -129,6 +129,7 @@ bool ActionConnectedSendMessage()
 			client.ActionCount++;
 			client.SendTelemetryActionAsync();
 			if (client.TelemetryInterval == 0) client.SendTelemetryEnvironmentAsync();
+			client.SendTelemetryBatteryVoltageAsync();
 
 			DisplayStartActionConnected(isConnected ? COLOR_CONNECTED : COLOR_DISCONNECTED);
 		}
@@ -137,6 +138,7 @@ bool ActionConnectedSendMessage()
 		{
 			Serial.println("Send environment info.");
 			client.SendTelemetryEnvironmentAsync();
+			client.SendTelemetryBatteryVoltageAsync();
 
 			do nextTime += client.TelemetryInterval * 1000;
 			while (SystemTickCounterRead() > nextTime);

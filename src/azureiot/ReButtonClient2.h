@@ -28,6 +28,7 @@ public:
 	bool IsDeviceTwinReceived() const;
 	void SendTelemetryActionAsync();
 	void SendTelemetryEnvironmentAsync();
+	void SendTelemetryBatteryVoltageAsync();
 
 private:
 	void ReceivedProperties(JSON_Object* reportedObject);

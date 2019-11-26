@@ -90,6 +90,7 @@ bool ActionSendMessage(ACTION_TYPE action)
 	client.ActionCount++;
 	client.SendTelemetryActionAsync();
 	client.SendTelemetryEnvironmentAsync();
+	client.SendTelemetryBatteryVoltageAsync();
 
 	////////////////////
 	// Wait for sent

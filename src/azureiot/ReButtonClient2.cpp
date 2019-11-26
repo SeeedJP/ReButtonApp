@@ -79,7 +79,6 @@ void ReButtonClient2::SendTelemetryActionAsync()
 		json_object_set_string(telemetryObject, "superLongPress", ActionToMessage(Action));
 		break;
 	}
-	json_object_set_number(telemetryObject, "batteryVoltage", ReButton::ReadPowerSupplyVoltage());
 	json_object_set_number(telemetryObject, "actionCount", ActionCount);
 
 	AzureDeviceClient::SendTelemetryAsync(telemetryObject);
@@ -145,6 +144,18 @@ void ReButtonClient2::SendTelemetryEnvironmentAsync()
 
 		json_value_free(telemetryValue);
 	}
+}
+
+void ReButtonClient2::SendTelemetryBatteryVoltageAsync()
+{
+	JSON_Value* telemetryValue = json_value_init_object();
+	JSON_Object* telemetryObject = json_value_get_object(telemetryValue);
+
+	json_object_set_number(telemetryObject, "batteryVoltage", ReButton::ReadPowerSupplyVoltage());
+
+	AzureDeviceClient::SendTelemetryAsync(telemetryObject);
+
+	json_value_free(telemetryValue);
 }
 
 void ReButtonClient2::ReceivedProperties(JSON_Object* reportedObject)
