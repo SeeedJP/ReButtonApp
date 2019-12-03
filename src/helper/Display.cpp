@@ -29,7 +29,7 @@ static void DisplayMain()
 	lastMessage.Color.Red = 0;
 	lastMessage.Color.Green = 0;
 	lastMessage.Color.Blue = 0;
-	Timer lastMessageTimer;
+	MyTimer lastMessageTimer;
 
 	for (;;)
 	{

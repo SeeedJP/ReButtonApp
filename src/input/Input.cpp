@@ -8,7 +8,7 @@ static INPUT_TYPE InputConfirm;
 static INPUT_TYPE InputCurrent;
 
 static bool ButtonState;
-static Timer ButtonTimer;
+static MyTimer ButtonTimer;
 
 void InputBegin()
 {
