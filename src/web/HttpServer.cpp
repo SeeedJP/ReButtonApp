@@ -109,19 +109,44 @@ static const char* HTML_WIFI_A = \
 			"<title>ReButton</title>" \
 			"<link rel=\"stylesheet\" href=\"/bootstrap-grid.min.css\" crossorigin=\"anonymous\">" \
 			"<link rel=\"stylesheet\" href=\"/rebutton.css\" crossorigin=\"anonymous\">" \
+			"<script>" \
+			"function setWiFiSSID() {" \
+				"var elmSel = document.getElementById(\"selWiFiSSID\");" \
+				"var elmSsid = document.getElementById(\"WiFiSSID\");" \
+				"if (elmSel.selectedIndex == elmSel.length - 1) {" \
+					"elmSsid.readOnly = \"\";" \
+					"elmSsid.style.display = \"block\";" \
+					"elmSsid.value = \"\";" \
+				"}" \
+				"else {" \
+					"elmSsid.readOnly = \"readOnly\";" \
+					"elmSsid.style.display = \"none\";" \
+					"elmSsid.value = elmSel.options[elmSel.selectedIndex].value;" \
+				"}" \
+			"}" \
+			"function checkWiFiSSID() {" \
+				"var elmSsid = document.getElementById(\"WiFiSSID\");" \
+				"if (elmSsid.value == \"\") {" \
+					"return false;" \
+				"}" \
+				"return true;" \
+			"}" \
+			"</script>" \
 		"</head>" \
-		"<body>" \
+		"<body onload=\"setWiFiSSID();\">" \
 			"<header>" \
 				"<h1>ReButton - Wi-Fi</h1>" \
 			"</header>" \
 			"<div class=\"container\">" \
-				"<form action=\"wifi2\" method=\"post\" enctype=\"multipart/form-data\">" \
+				"<form action=\"wifi2\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return checkWiFiSSID();\">" \
 					"<div class=\"row\">" \
 						"<label class=\"col-md-2\" for=\"WiFiSSID\">Wi-Fi SSID</label>" \
 						"<div class=\"col-md-10\">" \
-							"<select name=\"WiFiSSID\" id=\"WiFiSSID\">";
+							"<select name=\"selWiFiSSID\" id=\"selWiFiSSID\" onChange=\"setWiFiSSID();\">";
 static const char* HTML_WIFI_B = \
+							"<option value=\"\">Other...</option>" \
 							"</select>" \
+							"<input type=\"text\" name=\"WiFiSSID\" id=\"WiFiSSID\" value=\"\">" \
 						"</div>" \
 						"<small class=\"col-md-10 offset-md-2\">" \
 							"Select WiFi SSID to connect<br>" \
