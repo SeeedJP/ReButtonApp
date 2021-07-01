@@ -210,6 +210,8 @@ void ReButtonClient2::SendPropertyCustomMessageEnableAsync(int ackCode, int ackV
 	json_object_dotset_boolean(reportedObject, stringformat("%s.value", Config.CustomMessagePropertyName).c_str(), CustomMessageEnable);
 	json_object_dotset_number(reportedObject, stringformat("%s.ac", Config.CustomMessagePropertyName).c_str(), ackCode);
 	json_object_dotset_number(reportedObject, stringformat("%s.av", Config.CustomMessagePropertyName).c_str(), ackVersion);
+	json_object_dotset_string(reportedObject, stringformat("%s.ad", Config.CustomMessagePropertyName).c_str(),
+		stringformat("Successfully updated %s", Config.CustomMessagePropertyName).c_str());
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 
@@ -236,6 +238,8 @@ void ReButtonClient2::SendPropertyTelemetryIntervalAsync(int ackCode, int ackVer
 	json_object_dotset_number(reportedObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str(), TelemetryInterval);
 	json_object_dotset_number(reportedObject, stringformat("%s.ac", PROPERTY_TELEMETRY_INTERVAL).c_str(), ackCode);
 	json_object_dotset_number(reportedObject, stringformat("%s.av", PROPERTY_TELEMETRY_INTERVAL).c_str(), ackVersion);
+	json_object_dotset_string(reportedObject, stringformat("%s.ad", PROPERTY_TELEMETRY_INTERVAL).c_str(),
+		stringformat("Successfully updated %s", PROPERTY_TELEMETRY_INTERVAL).c_str());
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 
