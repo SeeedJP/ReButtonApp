@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#undef max
+#undef min
 #include "../Common.h"
 #include "ActionSendMessage.h"
 
-#include <emw10xx-driver/EMW10xxInterface.h>
+#include <az3166-driver/EMW10xxInterface.h>
 #include <system/SystemWiFi.h>
 #include <system/SystemTime.h>
 #include <azure_c_shared_utility/platform.h>
@@ -32,10 +34,11 @@ bool ActionSendMessage(ACTION_TYPE action)
 	Serial.println("ActionSendMessage() : Wi-Fi - Connecting....");
 	if (strlen(Config.WiFiSSID) <= 0 && strlen(Config.WiFiPassword) <= 0) return false;
 
-	SetNTPHost(Config.TimeServer);
+	SetTimeServer(Config.TimeServer);
 	InitSystemWiFi();
 	WIFI->set_interface(Station);
 	if (WIFI->connect(Config.WiFiSSID, Config.WiFiPassword, NSAPI_SECURITY_WPA_WPA2, 0) != 0) return false;
+	SyncTime();
 	platform_init();
 
 	IPAddress ip;

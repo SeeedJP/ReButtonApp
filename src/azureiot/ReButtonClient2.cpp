@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#undef max
+#undef min
 #include "../Common.h"
 #include "ReButtonClient2.h"
 
