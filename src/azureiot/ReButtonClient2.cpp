@@ -7,7 +7,7 @@
 #include <ReButton.h>
 #include <DevkitDPSClient.h>
 
-const char* PROPERTY_ACTION_COUNT = "actionCount";
+const char* PROPERTY_ACTION_COUNT = "lastActionCount";
 const char* PROPERTY_TELEMETRY_INTERVAL = "telemetryInterval";
 
 ReButtonClient2::ReButtonClient2() : _GroveSHT35(&_Board.I2C), _GroveSHT31(&_Board.I2C), _GroveBME280(&_Board.I2C)
