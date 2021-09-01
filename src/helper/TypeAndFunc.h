@@ -31,7 +31,7 @@ enum ACTION_TYPE
 	ACTION_AP,
 };
 
-extern const char* CONFIG_FIRMWARE_VERSION;
+extern const char CONFIG_FIRMWARE_VERSION[];
 
 extern const DISPLAY_COLOR_TYPE DISPLAY_OFF;
 extern const DISPLAY_COLOR_TYPE DISPLAY_OK;
@@ -42,9 +42,10 @@ extern const int INPUT_LONG_PRESS_TIME;
 extern const int INPUT_SUPER_LONG_PRESS_TIME;
 extern const int INPUT_ULTRA_LONG_PRESS_TIME;
 
-extern const char* GLOBAL_DEVICE_ENDPOINT;
+extern const char GLOBAL_DEVICE_ENDPOINT[];
+extern const char MODEL_ID[];
 
-extern const char* SSID_PREFIX;
+extern const char SSID_PREFIX[];
 
 ACTION_TYPE InputToAction(INPUT_TYPE value);
 const char* InputGetInputString(INPUT_TYPE value);

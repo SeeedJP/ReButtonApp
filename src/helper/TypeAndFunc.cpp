@@ -2,7 +2,7 @@
 #include "../Common.h"
 #include "TypeAndFunc.h"
 
-const char* CONFIG_FIRMWARE_VERSION = "1.11";
+const char CONFIG_FIRMWARE_VERSION[] = "1.11";
 
 const DISPLAY_COLOR_TYPE DISPLAY_OFF   = { 0  , 0  , 0 };	// OFF
 const DISPLAY_COLOR_TYPE DISPLAY_OK    = { 0  , 255, 0 };	// GREEN
@@ -13,9 +13,10 @@ const int INPUT_LONG_PRESS_TIME       = 3000;	// [msec.]
 const int INPUT_SUPER_LONG_PRESS_TIME = 6000;	// [msec.]
 const int INPUT_ULTRA_LONG_PRESS_TIME = 10000;	// [msec.]
 
-const char* GLOBAL_DEVICE_ENDPOINT = "global.azure-devices-provisioning.net";
+const char GLOBAL_DEVICE_ENDPOINT[] = "global.azure-devices-provisioning.net";
+const char MODEL_ID[] = "dtmi:seeedkk:ReButton;1";
 
-const char* SSID_PREFIX = "AZB-";
+const char SSID_PREFIX[] = "AZB-";
 
 ACTION_TYPE InputToAction(INPUT_TYPE value)
 {

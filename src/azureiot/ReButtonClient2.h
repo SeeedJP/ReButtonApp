@@ -1,6 +1,6 @@
 #pragma once
 
-#include <AzureDeviceClient.h>	// https://github.com/matsujirushi/AzureDeviceClient
+#include "AzureDeviceClient.h"
 #include <GroveDriverPack.h>	// https://github.com/SeeedJP/GroveDriverPack
 #include "../Common.h"
 

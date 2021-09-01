@@ -38,7 +38,7 @@ bool ReButtonClient2::ConnectIoTHubWithDPS(const char* endpoint, const char* sco
 
 	DevkitDPSSetLogTrace(false);
 	DevkitDPSSetAuthType(DPS_AUTH_SYMMETRIC_KEY);
-	if (!DevkitDPSClientStart(endpoint, scopeId, deviceId, sasKeyCopy, NULL, 0))
+	if (!DevkitDPSClientStart(endpoint, scopeId, deviceId, sasKeyCopy, NULL, 0, MODEL_ID))
 	{
 		Serial.println("DPS client has failed.");
 		return false;
@@ -52,7 +52,7 @@ bool ReButtonClient2::ConnectIoTHubWithDPS(const char* endpoint, const char* sco
 	connectionString += ";SharedAccessKey=";
 	connectionString += sasKey;
 
-	return ConnectIoTHub(connectionString.c_str());
+	return ConnectIoTHub(connectionString.c_str(), MODEL_ID);
 }
 
 void ReButtonClient2::SendTelemetryActionAsync()
