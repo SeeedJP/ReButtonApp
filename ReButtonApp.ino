@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// IDE:
+//   Arduino 2.0.2
+// Platform:
+//   SeeedJP ReButton 1.5.0 - https://github.com/SeeedJP/ReButtonArduinoPlatform
+// Board:
+//   Seeed ReButton
+// Board Settings:
+// Libraries:
+//   AzureDeviceClient 1.0.0 - https://github.com/matsujirushi/AzureDeviceClient
+//   GroveDriverPack 1.11.0 - https://github.com/SeeedJP/GroveDriverPack
+
 #include <Arduino.h>
 #include "src/Common.h"
 
