@@ -94,6 +94,10 @@ static const char* HTML_INDEX = \
 						"<small class=\"col-md-2\">Product Id</small>" \
 						"<small class=\"col-md-10\">%s</small>" \
 					"</div>" \
+					"<div class=\"row\">" \
+						"<small class=\"col-md-2\">Battery Voltage</small>" \
+						"<small class=\"col-md-10\">%s</small>" \
+					"</div>" \
 				"</div>" \
 			"</div>" \
 		"</body>" \
@@ -772,19 +776,25 @@ static int HtmlIndexGetHandler(httpd_request_t* req)
 	char strMacAddress[6 * 3 + 1];
 	snprintf(strMacAddress, sizeof(strMacAddress), "%02x:%02x:%02x:%02x:%02x:%02x", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]);
 
+	const auto batteryVoltage = std::min(std::max(ReButton::ReadPowerSupplyVoltage(), 0.0f), 9.99f);
+	char strBatteryVoltage[4 + 1];
+	snprintf(strBatteryVoltage, sizeof(strBatteryVoltage), "%.2f", batteryVoltage);
+
 	String html = stringformat2(
 		strlen(HTML_INDEX) +
 		strlen(CONFIG_FIRMWARE_VERSION) +
 		strlen(strMacAddress) +
 		strlen(Config.WiFiSSID) +
 		strlen(Config.TimeServer) +
-		strlen(Config.ProductId),
+		strlen(Config.ProductId) +
+		strlen(strBatteryVoltage),
 		HTML_INDEX,
 		CONFIG_FIRMWARE_VERSION,
 		strMacAddress,
 		Config.WiFiSSID,
 		Config.TimeServer,
-		Config.ProductId
+		Config.ProductId,
+		strBatteryVoltage
 	);
 	if ((err = HttpdSend(req, html.c_str())) != kNoErr) return err;
 
