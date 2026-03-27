@@ -34,9 +34,9 @@ private:
 	void ReceivedProperties(JSON_Object* reportedObject);
 	void ReceivedSettings(JSON_Object* desiredObject, bool complete);
 
-	void SendPropertyCustomMessageEnableAsync();
+	void SendPropertyCustomMessageEnableAsync(int ackCode, int ackVersion);
 	void SendPropertyActionCountAsync();
-	void SendPropertyTelemetryIntervalAsync();
+	void SendPropertyTelemetryIntervalAsync(int ackCode, int ackVersion);
 
 protected:
 	virtual void DeviceTwinReceived(JSON_Object* deviceTwinObject);

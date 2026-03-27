@@ -170,9 +170,10 @@ void ReButtonClient2::ReceivedProperties(JSON_Object* reportedObject)
 
 void ReButtonClient2::ReceivedSettings(JSON_Object* desiredObject, bool complete)
 {
-	if (strlen(Config.CustomMessagePropertyName) >= 1 && json_object_dothas_value_of_type(desiredObject, stringformat("%s.value", Config.CustomMessagePropertyName).c_str(), JSONBoolean))
+	if (strlen(Config.CustomMessagePropertyName) >= 1 && json_object_dothas_value_of_type(desiredObject, stringformat("%s", Config.CustomMessagePropertyName).c_str(), JSONBoolean))
 	{
-		int customMessageEnable = json_object_dotget_boolean(desiredObject, stringformat("%s.value", Config.CustomMessagePropertyName).c_str());
+		int customMessageEnable = json_object_dotget_boolean(desiredObject, stringformat("%s", Config.CustomMessagePropertyName).c_str());
+		int version = json_object_dotget_number(desiredObject, "$version");
 		switch (customMessageEnable)
 		{
 		case 1:
@@ -186,26 +187,31 @@ void ReButtonClient2::ReceivedSettings(JSON_Object* desiredObject, bool complete
 		Serial.print("CustomMessageEnable = ");
 		Serial.println(CustomMessageEnable ? "true" : "false");
 
-		SendPropertyCustomMessageEnableAsync();
+		SendPropertyCustomMessageEnableAsync(200, version);
 	}
 
-	if (json_object_dothas_value_of_type(desiredObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str(), JSONNumber))
+	if (json_object_dothas_value_of_type(desiredObject, stringformat("%s", PROPERTY_TELEMETRY_INTERVAL).c_str(), JSONNumber))
 	{
-		TelemetryInterval = json_object_dotget_number(desiredObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str());
+		TelemetryInterval = json_object_dotget_number(desiredObject, stringformat("%s", PROPERTY_TELEMETRY_INTERVAL).c_str());
+		int version = json_object_dotget_number(desiredObject, "$version");
 
 		Serial.print("TelemetryInterval = ");
 		Serial.println(TelemetryInterval);
 
-		SendPropertyTelemetryIntervalAsync();
+		SendPropertyTelemetryIntervalAsync(200, version);
 	}
 }
 
-void ReButtonClient2::SendPropertyCustomMessageEnableAsync()
+void ReButtonClient2::SendPropertyCustomMessageEnableAsync(int ackCode, int ackVersion)
 {
 	JSON_Value* reportedValue = json_value_init_object();
 	JSON_Object* reportedObject = json_value_get_object(reportedValue);
 
-	json_object_dotset_boolean(reportedObject, Config.CustomMessagePropertyName, CustomMessageEnable);
+	json_object_dotset_boolean(reportedObject, stringformat("%s.value", Config.CustomMessagePropertyName).c_str(), CustomMessageEnable);
+	json_object_dotset_number(reportedObject, stringformat("%s.ac", Config.CustomMessagePropertyName).c_str(), ackCode);
+	json_object_dotset_number(reportedObject, stringformat("%s.av", Config.CustomMessagePropertyName).c_str(), ackVersion);
+	json_object_dotset_string(reportedObject, stringformat("%s.ad", Config.CustomMessagePropertyName).c_str(),
+		stringformat("Successfully updated %s", Config.CustomMessagePropertyName).c_str());
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 
@@ -224,12 +230,16 @@ void ReButtonClient2::SendPropertyActionCountAsync()
 	json_value_free(reportedValue);
 }
 
-void ReButtonClient2::SendPropertyTelemetryIntervalAsync()
+void ReButtonClient2::SendPropertyTelemetryIntervalAsync(int ackCode, int ackVersion)
 {
 	JSON_Value* reportedValue = json_value_init_object();
 	JSON_Object* reportedObject = json_value_get_object(reportedValue);
 
-	json_object_dotset_number(reportedObject, PROPERTY_TELEMETRY_INTERVAL, TelemetryInterval);
+	json_object_dotset_number(reportedObject, stringformat("%s.value", PROPERTY_TELEMETRY_INTERVAL).c_str(), TelemetryInterval);
+	json_object_dotset_number(reportedObject, stringformat("%s.ac", PROPERTY_TELEMETRY_INTERVAL).c_str(), ackCode);
+	json_object_dotset_number(reportedObject, stringformat("%s.av", PROPERTY_TELEMETRY_INTERVAL).c_str(), ackVersion);
+	json_object_dotset_string(reportedObject, stringformat("%s.ad", PROPERTY_TELEMETRY_INTERVAL).c_str(),
+		stringformat("Successfully updated %s", PROPERTY_TELEMETRY_INTERVAL).c_str());
 
 	AzureDeviceClient::UpdateReportedPropertyAsync(reportedObject);
 
